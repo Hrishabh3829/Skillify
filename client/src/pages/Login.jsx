@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tabs"
 
 const Login = () => {
+  
   const [signUpInput, setSignUpInput] = useState({
     name: '',
     email: '',
