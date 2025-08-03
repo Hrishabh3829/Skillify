@@ -118,8 +118,21 @@ const Login = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={() => handleRegistration("signup")}>
-                  SignUp
+                <Button
+                  disabled={registerIsLoading}
+                  onClick={() => handleRegistration("signup")}
+                >
+                  {registerIsLoading ? (
+                    <>
+                      <DotLottieReact
+                        src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
+                        loop
+                        autoplay
+                      />
+                    </>
+                  ) : (
+                    "Signup"
+                  )}
                 </Button>
               </CardFooter>
             </Card>
@@ -159,13 +172,18 @@ const Login = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={() => handleRegistration("login")}>
+                <Button
+                  disabled={loginIsLoading}
+                  onClick={() => handleRegistration("login")}
+                >
                   {loginIsLoading ? (
-                    <DotLottieReact
-                      src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
-                      loop
-                      autoplay
-                    />
+                    <>
+                      <DotLottieReact
+                        src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
+                        loop
+                        autoplay
+                      />
+                    </>
                   ) : (
                     "Login"
                   )}
