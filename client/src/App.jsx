@@ -1,14 +1,15 @@
 
 import Login from './pages/Login'
+import NavBar from './pages/NavBar'
 
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 
 function App() {
 
   return (
 
     <main>
-     
+      <NavBar/>
       <Login/>
       
     </main>
