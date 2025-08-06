@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +16,7 @@ import {
   useRegisterUserMutation,
 } from "@/features/api/authApi";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [signUpInput, setSignUpInput] = useState({
@@ -64,6 +65,34 @@ const Login = () => {
     await action(inputData);
     // console.log(inputData);
   };
+  useEffect(() => {
+    if (registerIsSuccess && registerData) {
+      toast.success(registerData.message || "Signup Successfull.");
+    }
+    if (registerError) {
+      toast.error(registerData.message || "Signup Failed");
+    }
+
+    if (loginIsSuccess && loginData) {
+      toast.success(loginData.message || "Login Successfull.");
+    }
+    if (loginError) {
+      toast.error(loginData.message || "Login Failed");
+    }
+    // if (registerIsSuccess) {
+    //   setSignUpInput({ name: "", email: "", password: "" });
+    // }
+    // if (loginIsSuccess) {
+    //   setLoginInput({ email: "", password: "" });
+    // }
+  }, [
+    // isLoading,
+    registerIsLoading,
+    loginData,
+    registerData,
+    loginError,
+    registerError,
+  ]);
 
   return (
     <div className="flex items-center w-full justify-center">
