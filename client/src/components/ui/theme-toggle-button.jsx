@@ -109,7 +109,7 @@ const ThemeToggleButton = ({ showLabel = false, variant = "circle-blur", start =
         size="icon" 
         onClick={handleThemeToggle}
         disabled={isAnimating}
-        className="transition-all duration-150 hover:scale-105"
+        className="transition-all duration-150 hover:scale-105 rounded-md"
       >
         {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </Button>

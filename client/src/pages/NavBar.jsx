@@ -10,11 +10,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DarkMode } from "@/DarkMode";
-import { EditIcon, LogOut, School } from "lucide-react";
-import { useTheme } from "@/components/ui/theme-provider"; 
+import { EditIcon, LogOut, Menu, School } from "lucide-react";
+import { useTheme } from "@/components/ui/theme-provider";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 const NavBar = () => {
-  const user = true;
+  const user = false;
 
   // Fix: delay render until after hydration to prevent theme flash
   const [mounted, setMounted] = useState(false);
@@ -29,9 +38,11 @@ const NavBar = () => {
       <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full px-4">
         <div className="flex items-center gap-2">
           <School size={30} />
-          <h1 className="hidden md:block font-extrabold text-2xl">E-Learning</h1>
+          <h1 className="hidden md:block font-extrabold text-2xl">
+            E-Learning
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-8">
           {user ? (
             <>
               <DropdownMenu>
@@ -65,8 +76,49 @@ const NavBar = () => {
           )}
         </div>
       </div>
+      {/* Mobile device */}
+      <div className="flex md:hidden items-center justify-between px-4 h-full">
+        <h1 className="font-extrabold text-2xl">E-Learning</h1>
+
+        <MobileNavbar />
+      </div>
     </div>
   );
 };
 
 export default NavBar;
+
+const MobileNavbar = () => {
+  return (
+    <Sheet>
+      <SheetTrigger>
+        <Button
+          size="icon"
+          className="rounded-full bg-gray-200 hover:bg-gray-200"
+          variant="outline"
+        >
+          <Menu />
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="flex flex-col">
+        <SheetHeader className="flex flex-row items-center justify-between mt-2">
+          
+          <div className=" flex mt-2 gap-8">
+          <SheetTitle className="font-stretch-50% text-2xl">E-Learning</SheetTitle>
+
+          <DarkMode />
+          </div>
+        </SheetHeader>
+        <Separator className="mr-2"/>
+        <nav className="flex flex-col space-y-4 mx-4">
+          <span>My Learning</span>
+          <span>Edit Profile</span>
+          <p>Logout</p>
+        </nav>
+        {/* {
+          role="instructor" ? 
+        } */}
+      </SheetContent>
+    </Sheet>
+  );
+};
