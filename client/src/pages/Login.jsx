@@ -17,6 +17,7 @@ import {
 } from "@/features/api/authApi";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [signUpInput, setSignUpInput] = useState({
@@ -39,6 +40,8 @@ const Login = () => {
       isSuccess: registerIsSuccess,
     },
   ] = useRegisterUserMutation();
+
+  const navigate = useNavigate();
 
   const [
     loginUser,
@@ -75,6 +78,7 @@ const Login = () => {
 
     if (loginIsSuccess && loginData) {
       toast.success(loginData.message || "Login Successfull.");
+      navigate("/");
     }
     if (loginError) {
       toast.error(loginData.message || "Login Failed");

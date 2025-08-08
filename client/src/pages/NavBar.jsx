@@ -14,8 +14,9 @@ import { EditIcon, LogOut, Menu, School } from "lucide-react";
 import { useTheme } from "@/components/ui/theme-provider";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
-  SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -23,7 +24,7 @@ import {
 import { Separator } from "@radix-ui/react-dropdown-menu";
 
 const NavBar = () => {
-  const user = false;
+  const user = true;
 
   // Fix: delay render until after hydration to prevent theme flash
   const [mounted, setMounted] = useState(false);
@@ -89,6 +90,8 @@ const NavBar = () => {
 export default NavBar;
 
 const MobileNavbar = () => {
+  const role = "instructor";
+
   return (
     <Sheet>
       <SheetTrigger>
@@ -102,22 +105,29 @@ const MobileNavbar = () => {
       </SheetTrigger>
       <SheetContent className="flex flex-col">
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
-          
           <div className=" flex mt-2 gap-8">
-          <SheetTitle className="font-stretch-50% text-2xl">E-Learning</SheetTitle>
+            <SheetTitle className="font-stretch-50% text-2xl">
+              E-Learning
+            </SheetTitle>
 
-          <DarkMode />
+            <DarkMode />
           </div>
         </SheetHeader>
-        <Separator className="mr-2"/>
+        <Separator className="mr-2" />
         <nav className="flex flex-col space-y-4 mx-4">
           <span>My Learning</span>
           <span>Edit Profile</span>
           <p>Logout</p>
         </nav>
-        {/* {
-          role="instructor" ? 
-        } */}
+        {
+          role === "instructor" && (
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="submit" >Dashboard</Button>
+              </SheetClose>
+            </SheetFooter>
+          )
+        }
       </SheetContent>
     </Sheet>
   );
