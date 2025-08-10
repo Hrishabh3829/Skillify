@@ -71,6 +71,7 @@ const Login = () => {
   useEffect(() => {
     if (registerIsSuccess && registerData) {
       toast.success(registerData.message || "Signup Successfull.");
+      navigate("/");
     }
     if (registerError) {
       toast.error(registerData.message || "Signup Failed");

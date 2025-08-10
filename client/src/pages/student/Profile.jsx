@@ -15,19 +15,20 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import React from "react";
 import { Course } from "./Course";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLoadUserQuery } from "@/features/api/authApi";
 
 // Dummy placeholder skeleton for a course card
-const CourseSkeleton = () => (
-  <Skeleton className="h-40 w-full rounded-lg" />
-);
+const CourseSkeleton = () => <Skeleton className="h-40 w-full rounded-lg" />;
 
 export const Profile = () => {
-  const isLoading = false; // set true when fetching profile data
-  const enrolledCourses = [1,2]; // replace with fetched data
+  const { data, isLoading } = useLoadUserQuery();
+  // console.log(data)
+  // const isLoading = false; // set true when fetching profile data
 
   if (isLoading) {
     return <ProfileSkeleton />;
   }
+  const { user } = data;
 
   return (
     <div className="max-w-4xl mx-auto px-4 my-24">
@@ -36,7 +37,9 @@ export const Profile = () => {
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
         <div className="flex flex-col items-center">
           <Avatar className="h-24 w-24 md:h-32 md:w-32 mb-4">
-            <AvatarImage src="https://github.com/evilrabbit.png" />
+            <AvatarImage
+              src={user.photoUrl || "https://github.com/evilrabbit.png"}
+            />
             <AvatarFallback>^_^</AvatarFallback>
           </Avatar>
         </div>
@@ -46,7 +49,7 @@ export const Profile = () => {
             <h1 className="font-semibold text-gray-900 dark:text-gray-100">
               Name:
               <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                Hrishabh Gupta
+                {user.name}
               </span>
             </h1>
           </div>
@@ -55,7 +58,7 @@ export const Profile = () => {
             <h1 className="font-semibold text-gray-900 dark:text-gray-100">
               Email:
               <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                hrishabh@gmail.com
+                {user.email}
               </span>
             </h1>
           </div>
@@ -64,7 +67,7 @@ export const Profile = () => {
             <h1 className="font-semibold text-gray-900 dark:text-gray-100">
               Role:
               <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                Instructor
+                {user.role.toUpperCase()}
               </span>
             </h1>
           </div>
@@ -80,14 +83,19 @@ export const Profile = () => {
               <DialogHeader>
                 <DialogTitle>Edit Profile</DialogTitle>
                 <DialogDescription>
-                  Make changes to your profile here. Click save when you are done.
+                  Make changes to your profile here. Click save when you are
+                  done.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label>Name</Label>
-                  <Input type="text" placeholder="Name" className="col-span-3" />
+                  <Input
+                    type="text"
+                    placeholder="Name"
+                    className="col-span-3"
+                  />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label>Profile Photo</Label>
@@ -120,12 +128,14 @@ export const Profile = () => {
         <h1 className="font-medium text-lg">Courses You Are Enrolled In</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-5">
-          {enrolledCourses.length === 0 ? (
+          {user.enrolledCourses.length === 0 ? (
             <h1 className="col-span-full text-gray-500">
               You haven&apos;t enrolled in any courses yet.
             </h1>
           ) : (
-            enrolledCourses.map((course, index) => <Course key={index} />)
+            user.enrolledCourses.map((course) => (
+              <Course course={course} key={course._id} />
+            ))
           )}
         </div>
       </div>
