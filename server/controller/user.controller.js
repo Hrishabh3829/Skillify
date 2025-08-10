@@ -115,7 +115,7 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
+export const logout = (_, res) => {
   try {
     res.cookie("token", "", {
       httpOnly: true,
@@ -130,7 +130,30 @@ export const logout = (req, res) => {
     console.error("Logout error:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to logout due to a server error.",
+      message: "Failed to logout",
+    });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.id;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        message: "Profile not found",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("getUserProfile error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to load user",
     });
   }
 };
