@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DarkMode } from "@/DarkMode";
 import { EditIcon, LogOut, Menu, School } from "lucide-react";
-import { useTheme } from "@/components/ui/theme-provider";
 import {
   Sheet,
   SheetClose,
@@ -22,6 +21,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@radix-ui/react-dropdown-menu";
+import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const user = true;
@@ -56,10 +56,15 @@ const NavBar = () => {
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Dashboard</DropdownMenuItem>
-                  <DropdownMenuItem>My Learning</DropdownMenuItem>
                   <DropdownMenuItem>
-                    Edit Profile <EditIcon className="ml-2 h-4 w-4" />
+                    <Link to={"/"}>Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to={"/my-learning"}>My Learning</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to={"/profile"}>Edit Profile</Link>
+                    <EditIcon className="ml-2 h-4 w-4" />
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     Logout <LogOut className="ml-2 h-4 w-4" />
@@ -119,15 +124,13 @@ const MobileNavbar = () => {
           <span>Edit Profile</span>
           <p>Logout</p>
         </nav>
-        {
-          role === "instructor" && (
-            <SheetFooter>
-              <SheetClose asChild>
-                <Button type="submit" >Dashboard</Button>
-              </SheetClose>
-            </SheetFooter>
-          )
-        }
+        {role === "instructor" && (
+          <SheetFooter>
+            <SheetClose asChild>
+              <Button type="submit">Dashboard</Button>
+            </SheetClose>
+          </SheetFooter>
+        )}
       </SheetContent>
     </Sheet>
   );
