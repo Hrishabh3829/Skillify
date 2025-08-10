@@ -31,13 +31,26 @@ export const authApi = createApi({
         }
       },
     }),
-    loadUser:builder.query({
-      query:()=>({
-        url:"profile",
-        method:"GET"
-      })
-    })
+    loadUser: builder.query({
+      query: () => ({
+        url: "profile",
+        method: "GET",
+      }),
+    }),
+    updateUser: builder.mutation({
+      query: (formData) => ({
+        url: "profile/update",
+        method: "PUT",
+        body: formData,
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
-export const { useRegisterUserMutation, useLoginUserMutation,useLoadUserQuery } = authApi;
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useLoadUserQuery,
+  useUpdateUserMutation,
+} = authApi;
