@@ -22,9 +22,24 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Link, useNavigate } from "react-router-dom";
+import { useLogoutUserMutation } from "@/features/api/authApi.js";
+import { toast } from "sonner";
 
 const NavBar = () => {
   const user = true;
+  const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
+  const navigate = useNavigate();
+
+  const logoutHandler = async () => {
+    await logoutUser();
+    navigate("/login");
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data.message || "Logged Out");
+    }
+  }, [isSuccess]);
 
   // Fix: delay render until after hydration to prevent theme flash
   const [mounted, setMounted] = useState(false);
@@ -66,7 +81,7 @@ const NavBar = () => {
                     <Link to={"/profile"}>Edit Profile</Link>
                     <EditIcon className="ml-2 h-4 w-4" />
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={logoutHandler}>
                     Logout <LogOut className="ml-2 h-4 w-4" />
                   </DropdownMenuItem>
                 </DropdownMenuContent>

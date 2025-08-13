@@ -95,8 +95,8 @@ export const Profile = () => {
 
   if (isLoading) return <ProfileSkeleton />;
 
-  const user = data?.user;
-  const enrolledCourses =  user?.enrolledCourses || [1, 2] ;
+  const user = data && data.user;
+  const enrolledCourses = user?.enrolledCourses || [1, 2];
   return (
     <div className="max-w-4xl mx-auto px-4 my-24">
       {/* Profile header */}
