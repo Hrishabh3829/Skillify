@@ -24,16 +24,18 @@ import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutUserMutation } from "@/features/api/authApi.js";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const NavBar = () => {
-  const user = true;
+  const {user}=useSelector(store => store.auth)
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
   const navigate = useNavigate();
-
+  
   const logoutHandler = async () => {
     await logoutUser();
     navigate("/login");
   };
+  console.log(user)
 
   useEffect(() => {
     if (isSuccess) {
@@ -64,7 +66,7 @@ const NavBar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
-                    <AvatarImage src="https://github.com/evilrabbit.png" />
+                    <AvatarImage src={user?.photoUrl || "https://github.com/evilrabbit.png"} />
                     <AvatarFallback>^_^</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
