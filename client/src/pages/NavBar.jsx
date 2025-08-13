@@ -27,15 +27,14 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 
 const NavBar = () => {
-  const {user}=useSelector(store => store.auth)
+  const { user } = useSelector((store) => store.auth);
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
   const navigate = useNavigate();
-  
+
   const logoutHandler = async () => {
     await logoutUser();
     navigate("/login");
   };
-  console.log(user)
 
   useEffect(() => {
     if (isSuccess) {
@@ -66,16 +65,17 @@ const NavBar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
-                    <AvatarImage src={user?.photoUrl || "https://github.com/evilrabbit.png"} />
+                    <AvatarImage
+                      src={
+                        user?.photoUrl || "https://github.com/evilrabbit.png"
+                      }
+                    />
                     <AvatarFallback>^_^</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link to={"/"}>Dashboard</Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link to={"/my-learning"}>My Learning</Link>
                   </DropdownMenuItem>
@@ -86,14 +86,24 @@ const NavBar = () => {
                   <DropdownMenuItem onClick={logoutHandler}>
                     Logout <LogOut className="ml-2 h-4 w-4" />
                   </DropdownMenuItem>
+                  {user.role === "instructor" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
               <DarkMode />
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Button variant="outline">Login</Button>
-              <Button variant="outline">Signup</Button>
+              <Button variant="outline" onClick={() => navigate("/login")}>
+                Login
+              </Button>
+              <Button variant="outline" onClick={() => navigate("/login")}>
+                Signup
+              </Button>
               <DarkMode />
             </div>
           )}

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { userLoggedIn } from "../authSlice";
+import { useLoggedOut, userLoggedIn } from "../authSlice";
 
 const USER_API = "http://localhost:5000/api/v1/user/";
 export const authApi = createApi({
@@ -42,6 +42,13 @@ export const authApi = createApi({
         url: "logout",
         method: "GET",
       }),
+      async onQueryStarted(_, { queryFulfilled, dispatch }) {
+        try {
+          dispatch(useLoggedOut());
+        } catch (error) {
+          console.log(error);
+        }
+      },
     }),
     loadUser: builder.query({
       query: () => ({

@@ -21,39 +21,33 @@ import {
 } from "@/features/api/authApi";
 import { toast } from "sonner";
 
-// Skeleton for course card
+// Skeleton components
 const CourseSkeleton = () => <Skeleton className="h-40 w-full rounded-lg" />;
 
-// Skeleton for profile page
-const ProfileSkeleton = () => {
-  return (
-    <div className="max-w-4xl mx-auto px-4 my-24">
-      <Skeleton className="h-7 w-40 mx-auto md:mx-0" />
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
-        <div className="flex flex-col items-center">
-          <Skeleton className="h-24 w-24 md:h-32 md:w-32 rounded-full mb-4" />
-        </div>
-        <div className="space-y-3 w-full">
-          <Skeleton className="h-5 w-52" />
-          <Skeleton className="h-5 w-64" />
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-8 w-28 rounded-md" />
-        </div>
+const ProfileSkeleton = () => (
+  <div className="max-w-4xl mx-auto px-4 my-24">
+    <Skeleton className="h-7 w-40 mx-auto md:mx-0" />
+    <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
+      <div className="flex flex-col items-center">
+        <Skeleton className="h-24 w-24 md:h-32 md:w-32 rounded-full mb-4" />
       </div>
-      <Skeleton className="h-6 w-56" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-5">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <CourseSkeleton key={i} />
-        ))}
+      <div className="space-y-3 w-full">
+        <Skeleton className="h-5 w-52" />
+        <Skeleton className="h-5 w-64" />
+        <Skeleton className="h-5 w-40" />
+        <Skeleton className="h-8 w-28 rounded-md" />
       </div>
     </div>
-  );
-};
+    <Skeleton className="h-6 w-56" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-5">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <CourseSkeleton key={i} />
+      ))}
+    </div>
+  </div>
+);
 
 export const Profile = () => {
-  const [name, setName] = useState("");
-  const [profilePhoto, setProfilePhoto] = useState("");
-
   const { data, isLoading, refetch } = useLoadUserQuery();
   const [
     updateUser,
@@ -65,6 +59,30 @@ export const Profile = () => {
       data: updateUserData,
     },
   ] = useUpdateUserMutation();
+
+  const [name, setName] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState("");
+
+  useEffect(() => {
+    if (data?.user?.name) {
+      setName(data.user.name);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess) {
+      refetch();
+      setProfilePhoto("");
+      toast.success(updateUserData?.message || "Profile updated.");
+    }
+    if (isError) {
+      toast.error(error?.message || "Profile update failed.");
+    }
+  }, [isSuccess, isError, error, updateUserData, refetch]);
 
   const onChangeHandler = (e) => {
     const file = e.target.files?.[0];
@@ -78,31 +96,15 @@ export const Profile = () => {
     await updateUser(formData);
   };
 
-  useEffect(() => {
-    if (data?.user?.name) setName(data.user.name);
-  }, [data]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      refetch();
-      setProfilePhoto("");
-      toast.success(updateUserData?.message || "Profile Updated.");
-    }
-    if (isError) {
-      toast.error(error?.message || "Profile Update failed.");
-    }
-  }, [isSuccess, isError, error, updateUserData]);
-
   if (isLoading) return <ProfileSkeleton />;
 
-  const user = data && data.user;
-  const enrolledCourses = user?.enrolledCourses || [1, 2];
+  const user = data?.user;
+  const enrolledCourses = user?.enrolledCourses || [];
+
   return (
     <div className="max-w-4xl mx-auto px-4 my-24">
-      {/* Profile header */}
       <h1 className="font-bold text-2xl text-center md:text-left">PROFILE</h1>
 
-      {/* Profile info */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 mb-4">
           <AvatarImage
@@ -122,7 +124,6 @@ export const Profile = () => {
             <strong>Role:</strong> {user?.role?.toUpperCase()}
           </p>
 
-          {/* Edit dialog */}
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="mt-2">
@@ -181,7 +182,6 @@ export const Profile = () => {
         </div>
       </div>
 
-      {/* Courses section */}
       <div>
         <h1 className="font-medium text-lg">Courses You Are Enrolled In</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-5">
