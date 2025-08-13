@@ -57,7 +57,13 @@ export const Profile = () => {
   const { data, isLoading, refetch } = useLoadUserQuery();
   const [
     updateUser,
-    { isLoading: updateUserIsLoading, isError, error, isSuccess, data: updateUserData },
+    {
+      isLoading: updateUserIsLoading,
+      isError,
+      error,
+      isSuccess,
+      data: updateUserData,
+    },
   ] = useUpdateUserMutation();
 
   const onChangeHandler = (e) => {
@@ -90,7 +96,7 @@ export const Profile = () => {
   if (isLoading) return <ProfileSkeleton />;
 
   const user = data?.user;
-
+  const enrolledCourses =  user?.enrolledCourses || [1, 2] ;
   return (
     <div className="max-w-4xl mx-auto px-4 my-24">
       {/* Profile header */}
@@ -99,7 +105,9 @@ export const Profile = () => {
       {/* Profile info */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 mb-4">
-          <AvatarImage src={user?.photoUrl || "https://github.com/evilrabbit.png"} />
+          <AvatarImage
+            src={user?.photoUrl || "https://github.com/evilrabbit.png"}
+          />
           <AvatarFallback>^_^</AvatarFallback>
         </Avatar>
 
@@ -150,7 +158,10 @@ export const Profile = () => {
                 </div>
               </div>
               <DialogFooter>
-                <Button disabled={updateUserIsLoading} onClick={updateUserHandler}>
+                <Button
+                  disabled={updateUserIsLoading}
+                  onClick={updateUserHandler}
+                >
                   {updateUserIsLoading ? (
                     <>
                       <DotLottieReact
@@ -174,12 +185,14 @@ export const Profile = () => {
       <div>
         <h1 className="font-medium text-lg">Courses You Are Enrolled In</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-5">
-          {user?.enrolledCourses?.length === 0 ? (
+          {enrolledCourses.length === 0 ? (
             <h1 className="col-span-full text-gray-500">
               You haven&apos;t enrolled in any courses yet.
             </h1>
           ) : (
-            user.enrolledCourses.map((course) => <Course course={course} key={course._id} />)
+            enrolledCourses.map((course) => (
+              <Course course={course} key={course._id || course} />
+            ))
           )}
         </div>
       </div>
