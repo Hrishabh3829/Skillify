@@ -64,10 +64,19 @@ const Login = () => {
 
   const handleRegistration = async (type) => {
     const inputData = type === "signup" ? signUpInput : loginInput;
+
+    //Added email format validation
+    const emailToCheck = inputData.email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailToCheck)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    
     const action = type === "signup" ? registerUser : loginUser;
     await action(inputData);
-    // console.log(inputData);
   };
+
   useEffect(() => {
     if (registerIsSuccess && registerData) {
       toast.success(registerData.message || "Signup Successfull.");
@@ -84,20 +93,7 @@ const Login = () => {
     if (loginError) {
       toast.error(loginError.data.message || "Login Failed");
     }
-    // if (registerIsSuccess) {
-    //   setSignUpInput({ name: "", email: "", password: "" });
-    // }
-    // if (loginIsSuccess) {
-    //   setLoginInput({ email: "", password: "" });
-    // }
-  }, [
-    // isLoading,
-    registerIsLoading,
-    loginData,
-    registerData,
-    loginError,
-    registerError,
-  ]);
+  }, [registerIsLoading, loginData, registerData, loginError, registerError]);
 
   return (
     <div className="flex items-center w-full justify-center mt-20">
@@ -157,13 +153,11 @@ const Login = () => {
                   onClick={() => handleRegistration("signup")}
                 >
                   {registerIsLoading ? (
-                    <>
-                      <DotLottieReact
-                        src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
-                        loop
-                        autoplay
-                      />
-                    </>
+                    <DotLottieReact
+                      src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
+                      loop
+                      autoplay
+                    />
                   ) : (
                     "Signup"
                   )}
@@ -211,13 +205,11 @@ const Login = () => {
                   onClick={() => handleRegistration("login")}
                 >
                   {loginIsLoading ? (
-                    <>
-                      <DotLottieReact
-                        src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
-                        loop
-                        autoplay
-                      />
-                    </>
+                    <DotLottieReact
+                      src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
+                      loop
+                      autoplay
+                    />
                   ) : (
                     "Login"
                   )}
