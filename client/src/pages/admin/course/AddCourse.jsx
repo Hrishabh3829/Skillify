@@ -24,7 +24,6 @@ export const AddCourse = () => {
     useCreateCourseMutation();
 
   const navigate = useNavigate();
-  // const isLoading = false;
   const getSelectedCategory = (value) => {
     setCategory(value);
   };
@@ -45,8 +44,7 @@ export const AddCourse = () => {
       <div className="mb-4">
         <h1 className="font-bold text-xl ">Ready to add your course.</h1>
         <p className="text-sm ">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Suscipit,
-          voluptas.
+          Please fill in the details below to create your course.
         </p>
       </div>
       <div className="space-y-4 ">
@@ -68,9 +66,19 @@ export const AddCourse = () => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Category</SelectLabel>
-                <SelectItem value="Next Js">Next Js</SelectItem>
-                <SelectItem value="Web development">Web development</SelectItem>
-                <SelectItem value="System design">System design</SelectItem>
+                <SelectItem value="Web Development">Web Development</SelectItem>
+                <SelectItem value="Cloud Computing">Cloud Computing</SelectItem>
+                <SelectItem value="Data Science & AI">
+                  Data Science & AI
+                </SelectItem>
+                <SelectItem value="DSA & Programming">
+                  DSA & Programming
+                </SelectItem>
+                <SelectItem value="System Design">System Design</SelectItem>
+                <SelectItem value="Cybersecurity">Cybersecurity</SelectItem>
+                <SelectItem value="Mobile Development">
+                  Mobile Development
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
