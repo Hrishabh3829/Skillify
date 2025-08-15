@@ -36,6 +36,7 @@ export const AddCourse = () => {
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message || "Course Created");
+      navigate("/admin/course");
     }
   }, [isSuccess, error]);
 
