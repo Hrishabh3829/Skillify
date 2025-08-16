@@ -17,10 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEditCourseMutation } from "@/features/api/courseApi";
 import RichTextEditor from "@/pages/RichTextEditor";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const CourseTab = () => {
   const [input, setInput] = useState({
@@ -36,6 +38,12 @@ const CourseTab = () => {
   const [previewThumbnail, setPreviewThumbnail] = useState("");
 
   const navigate = useNavigate();
+
+  const params = useParams();
+  const courseId = params.courseId;
+
+  const [editCourse, { data, isLoading, isSuccess, error }] =
+    useEditCourseMutation();
 
   const changeEventHandler = (e) => {
     const { name, value } = e.target;
@@ -61,12 +69,26 @@ const CourseTab = () => {
     }
   };
 
-  const updateCourseHandler = () => {
-    console.log(input);
+  const updateCourseHandler = async () => {
+    const formData = new FormData();
+    formData.append("courseTitle", input.courseTitle);
+    formData.append("subTitle", input.subTitle);
+    formData.append("description", input.description);
+    formData.append("category", input.category);
+    formData.append("courseLevel", input.courseLevel);
+    formData.append("courseThumbnail", input.courseThumbnail);
+    await editCourse({formData, courseId});
   };
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data.message || "Course updated.");
+    }
+    if (error) {
+      toast.error(error.data.message || "Failed to update course.");
+    }
+  }, [isSuccess, error]);
 
   const isPublished = false;
-  const isLoading = false;
 
   return (
     <Card>
@@ -109,7 +131,7 @@ const CourseTab = () => {
           </div>
           <div>
             <Label className="my-1">Course Description</Label>
-            <RichTextEditor input={input} aetInput={setInput} />
+            <RichTextEditor input={input} setInput={setInput} />
           </div>
           <div className="flex items-center gap-5">
             <div>
@@ -193,7 +215,11 @@ const CourseTab = () => {
             <Button onClick={() => navigate("/admin/course")} variant="outline">
               Cancel
             </Button>
-            <Button variant="outline" disabled={isLoading} onClick={updateCourseHandler}>
+            <Button
+              variant="outline"
+              disabled={isLoading}
+              onClick={updateCourseHandler}
+            >
               {isLoading ? (
                 <>
                   <DotLottieReact
