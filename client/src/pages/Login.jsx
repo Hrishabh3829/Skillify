@@ -61,7 +61,6 @@ const Login = () => {
       setLoginInput({ ...loginInput, [name]: value });
     }
   };
-
   const handleRegistration = async (type) => {
     const inputData = type === "signup" ? signUpInput : loginInput;
 
@@ -72,7 +71,12 @@ const Login = () => {
       toast.error("Please enter a valid email address.");
       return;
     }
-    
+
+    if (type === "signup" && inputData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return;
+    }
+
     const action = type === "signup" ? registerUser : loginUser;
     await action(inputData);
   };
@@ -82,18 +86,22 @@ const Login = () => {
       toast.success(registerData.message || "Signup Successfull.");
       navigate("/");
     }
+    
     if (registerError) {
-      toast.error(registerError.data.message || "Signup Failed");
+      toast.error(registerError?.data?.message || "Signup Failed");
     }
 
     if (loginIsSuccess && loginData) {
       toast.success(loginData.message || "Login Successfull.");
       navigate("/");
     }
+
     if (loginError) {
-      toast.error(loginError.data.message || "Login Failed");
+      toast.error(loginError?.data?.message || "Login Failed");
     }
   }, [registerIsLoading, loginData, registerData, loginError, registerError]);
+
+  
 
   return (
     <div className="flex items-center w-full justify-center mt-20">

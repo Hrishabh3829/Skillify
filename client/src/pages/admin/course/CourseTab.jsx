@@ -76,8 +76,13 @@ const CourseTab = () => {
     formData.append("description", input.description);
     formData.append("category", input.category);
     formData.append("courseLevel", input.courseLevel);
-    formData.append("courseThumbnail", input.courseThumbnail);
-    await editCourse({formData, courseId});
+    formData.append("coursePrice", input.coursePrice);
+
+    if (input.courseThumbnail) {
+      formData.append("courseThumbnail", input.courseThumbnail);
+    }
+
+    await editCourse({ formData, courseId });
   };
   useEffect(() => {
     if (isSuccess) {

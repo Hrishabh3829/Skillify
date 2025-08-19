@@ -80,7 +80,7 @@ export const Profile = () => {
       toast.success(updateUserData?.message || "Profile updated.");
     }
     if (isError) {
-      toast.error(error?.message || "Profile update failed.");
+      toast.error(error?.data?.message || "Profile update failed.");
     }
   }, [isSuccess, isError, error, updateUserData, refetch]);
 

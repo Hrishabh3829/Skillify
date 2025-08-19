@@ -29,6 +29,7 @@ export const courseApi = createApi({
         url: `/${courseId}`,
         method: "PUT",
         body: formData,
+        headers:{},
       }),
     }),
   }),
