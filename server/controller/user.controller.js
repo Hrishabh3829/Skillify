@@ -100,7 +100,7 @@ export const login = async (req, res) => {
       })
       .json({
         success: true,
-        message: `Welcome back, ${user.name}!`,
+        message: `Welcome back, ${user.name} 👋`,
         user: {
           _id: user._id,
           name: user.name,
@@ -165,6 +165,14 @@ export const updateProfile = async (req, res) => {
     const { name } = req.body;
     const profilePhoto = req.file;
     const user = await User.findById(userId);
+
+    if (!name || !profilePhoto) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and photo required",
+      });
+    }
+
     if (!user) {
       return res.status(404).json({
         message: "User not found",
