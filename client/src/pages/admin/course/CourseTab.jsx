@@ -17,9 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEditCourseMutation } from "@/features/api/courseApi";
+import {
+  useEditCourseMutation,
+  useGetCourseByIdQuery,
+} from "@/features/api/courseApi";
 import RichTextEditor from "@/pages/RichTextEditor";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -34,13 +38,30 @@ const CourseTab = () => {
     coursePrice: "",
     courseThumbnail: "",
   });
+  const params = useParams();
+  const courseId = params.courseId;
+
+  const { data: courseByIdData, isLoading: courseByIdLoading } =
+    useGetCourseByIdQuery(courseId, { refetchOnMountOrArgChange: true });
+
+  useEffect(() => {
+    if (courseByIdData?.course) {
+      const course = courseByIdData?.course;
+      setInput({
+        courseTitle: course.courseTitle || "",
+        subTitle: course.subTitle || "",
+        description: course.description || "",
+        category: course.category || "",
+        courseLevel: course.courseLevel || "",
+        coursePrice: course.coursePrice ?? "",
+        courseThumbnail: "",
+      });
+    }
+  }, [courseByIdData]);
 
   const [previewThumbnail, setPreviewThumbnail] = useState("");
 
   const navigate = useNavigate();
-
-  const params = useParams();
-  const courseId = params.courseId;
 
   const [editCourse, { data, isLoading, isSuccess, error }] =
     useEditCourseMutation();
@@ -92,6 +113,7 @@ const CourseTab = () => {
       toast.error(error.data.message || "Failed to update course.");
     }
   }, [isSuccess, error]);
+  if(courseByIdLoading) return <Loader2 className="h-4 w-4 animate-spin"/>
 
   const isPublished = false;
 
@@ -119,7 +141,7 @@ const CourseTab = () => {
             <Input
               type="text"
               name="courseTitle"
-              value={input.courseTitle}
+              value={input.courseTitle || ""}
               onChange={changeEventHandler}
               placeholder="Enter the main title of your course"
             />
@@ -141,7 +163,7 @@ const CourseTab = () => {
           <div className="flex items-center gap-5">
             <div>
               <Label className="my-1">Category</Label>
-              <Select onValueChange={selectCategory}>
+              <Select value={input.category} onValueChange={selectCategory}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Choose a category" />
                 </SelectTrigger>
@@ -171,7 +193,10 @@ const CourseTab = () => {
             </div>
             <div>
               <Label className="my-1">Course Level</Label>
-              <Select onValueChange={selectCourseLevel}>
+              <Select
+                value={input.courseLevel}
+                onValueChange={selectCourseLevel}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select difficulty level" />
                 </SelectTrigger>
@@ -190,7 +215,7 @@ const CourseTab = () => {
               <Input
                 type="number"
                 name="coursePrice"
-                value={input.coursePrice}
+                value={input.coursePrice || ""}
                 onChange={changeEventHandler}
                 placeholder="Enter course price, e.g., 199"
                 className="w-fit"

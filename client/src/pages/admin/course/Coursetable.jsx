@@ -20,10 +20,9 @@ const Coursetable = () => {
 
   if (isLoading) return <h1>Loading....</h1>;
 
-  // Calculate total price
   const totalPrice =
     data?.courses?.reduce((sum, course) => {
-      return sum + (course.price || 0);
+      return sum + (Number(course.coursePrice) || 0);
     }, 0) || 0;
 
   return (
@@ -47,7 +46,7 @@ const Coursetable = () => {
                 <TableRow key={course._id}>
                   <TableCell>{course.courseTitle}</TableCell>
                   <TableCell className="font-medium">
-                    {course.price ? `₹${course.price}` : "NA"}
+                    {course.coursePrice ? `₹${course.coursePrice}` : "NA"}
                   </TableCell>
                   <TableCell>
                     <Badge
