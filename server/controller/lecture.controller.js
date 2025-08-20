@@ -37,7 +37,34 @@ export const createLecture = async (req, res) => {
     console.error("Create Lecture error:", error);
     return res.status(500).json({
       success: false,
-      message: "An unexpected error occurred while creating the lecture."
+      message: "An unexpected error occurred while creating the lecture.",
+    });
+  }
+};
+
+export const getCourseLecture = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const course = await Course.findById(courseId).populate("lectures");
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Oops! Course not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Here are your lectures, ready to dive in! 🚀",
+      lectures:course.lectures,
+    });
+  } catch (error) {
+    console.error("Get Lecture error:", error);
+    return res.status(500).json({
+      success: false,
+      message:
+        "Something went wrong while fetching lectures. Please try again.",
     });
   }
 };
