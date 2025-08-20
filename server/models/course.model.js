@@ -18,7 +18,7 @@ const courseSchema = new mongoose.Schema(
     },
     courseLevel: {
       type: String,
-      enum: ["Beginner", "Intermediate", "Advance"],
+      enum: ["Beginner", "Intermediate", "Advanced"],
     },
     coursePrice: {
       type: Number,
@@ -34,8 +34,8 @@ const courseSchema = new mongoose.Schema(
     ],
     lectures: [
       {
-        types: mongoose.Schema.Types.ObjectId,
-        // ref: "Lecture",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lecture",
       },
     ],
     creator: {
@@ -49,5 +49,5 @@ const courseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
- 
+
 export const Course = mongoose.model("Course", courseSchema);
