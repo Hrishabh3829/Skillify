@@ -133,3 +133,37 @@ export const getCourseById = async (req, res) => {
     });
   }
 };
+
+//Publish and Unpublish Logic
+
+export const togglePublishCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { publish } = req.query; //true or false
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not found!",
+      });
+    }
+
+    // Toggle publish status
+    course.isPublished = publish === "true";
+    await course.save();
+
+    const statusMessage = course.isPublished
+      ? "🚀 Your course is now live!"
+      : "⏸️ Your course has been unpublished.";
+
+    return res.status(200).json({
+      message: statusMessage,
+    });
+  } catch (error) {
+    console.error("togglePublishCourse error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while updating course status.",
+    });
+  }
+};
