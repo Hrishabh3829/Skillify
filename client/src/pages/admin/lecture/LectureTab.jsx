@@ -15,10 +15,12 @@ import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import {
   useEditLectureMutation,
+  useGetLectureByIdQuery,
   useRemoveLectureMutation,
 } from "@/features/api/courseApi";
 import { useParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const MEDIA_API = "http://localhost:5000/api/v1/media";
 
@@ -31,6 +33,16 @@ const LectureTab = () => {
   const [btnDisable, setBtnDisable] = useState(true);
   const params = useParams();
   const { courseId, lectureId } = params;
+
+  const { data: lectureData } = useGetLectureByIdQuery(lectureId);
+  const lecture = lectureData?.lecture;
+  useEffect(() => {
+    if (lecture) {
+      setLectureTitle(lecture.lectureTitle);
+      setIsFree(lecture.isPreviewFree);
+      setUploadVideoInfo(lecture.videoInfo);
+    }
+  }, [lecture]);
 
   const [editLecture, { data, isLoading, isSuccess, error }] =
     useEditLectureMutation();
@@ -152,7 +164,7 @@ const LectureTab = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <Switch id="free" />
+          <Switch checked={isFree} onCheckedChange={setIsFree} id="free" />
           <Label htmlFor="free" className="cursor-pointer">
             Is this video free?
           </Label>
@@ -166,7 +178,20 @@ const LectureTab = () => {
 
         <div className="flex justify-end space-x-3 pt-4 border-t">
           <Button variant="outline">Cancel</Button>
-          <Button onClick={editLectureHandler}>Update Lecture</Button>
+          <Button disabled={isLoading} onClick={editLectureHandler}>
+            {isLoading ? (
+              <>
+                <DotLottieReact
+                  src="https://lottie.host/99307f19-5bee-48c9-90f1-11858c3a98d1/vtpTJ34roC.lottie"
+                  loop
+                  autoplay
+                />
+                Please wait
+              </>
+            ) : (
+              "Update Lecture"
+            )}
+          </Button>
         </div>
       </CardContent>
     </Card>
