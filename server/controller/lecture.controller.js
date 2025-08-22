@@ -81,11 +81,16 @@ export const editLecture = async (req, res) => {
         message: "Lecture not found!",
       });
     }
+    if (!videoInfo) {
+      return res.status(404).json({
+        message: "Lecture video is missing.",
+      });
+    }
 
     // Update lecture fields
     if (lectureTitle) lecture.lectureTitle = lectureTitle;
-    if (videoInfo.videoUrl) lecture.videoUrl = videoInfo.videoUrl;
-    if (videoInfo.publicId) lecture.publicId = videoInfo.publicId;
+    if (videoInfo?.videoUrl) lecture.videoUrl = videoInfo.videoUrl;
+    if (videoInfo?.publicId) lecture.publicId = videoInfo.publicId;
     if (isPreviewFree !== undefined) lecture.isPreviewFree = isPreviewFree;
     // fixed condition: was "if (isPreviewFree)" which skipped `false`
 
