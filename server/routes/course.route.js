@@ -5,6 +5,7 @@ import {
   editCourse,
   getCourseById,
   getCreatorCourses,
+  getPublishedCourse,
   togglePublishCourse,
 } from "../controller/course.controller.js";
 import upload from "../utils/multer.js";
@@ -19,6 +20,8 @@ import {
 const router = express.Router();
 
 router.route("/").post(isAuthenticated, createCourse);
+router.route("/published-courses").get(isAuthenticated, getPublishedCourse);
+
 router.route("/").get(isAuthenticated, getCreatorCourses);
 router
   .route("/:courseId")
