@@ -33,14 +33,19 @@ const CourseTab = () => {
   const [input, setInput] = useState({
     courseTitle: "",
     subTitle: "",
-    description: "",
+    description: "", // plain text for DB
+    descriptionHtml: "", // HTML for editor
     category: "",
     courseLevel: "",
     coursePrice: "",
-    courseThumbnail: "",
+    courseThumbnail: "", // file object if user selects
   });
+
+  const [previewThumbnail, setPreviewThumbnail] = useState(""); // preview URL
+
   const params = useParams();
   const courseId = params.courseId;
+  const navigate = useNavigate();
 
   const {
     data: courseByIdData,
@@ -48,30 +53,35 @@ const CourseTab = () => {
     refetch,
   } = useGetCourseByIdQuery(courseId, { refetchOnMountOrArgChange: true });
 
-  const [publishCourse, {}] = usePublishCourseMutation();
+  const [editCourse, { data, isLoading, isSuccess, error }] =
+    useEditCourseMutation();
+  const [publishCourse] = usePublishCourseMutation();
 
+  // Fetch course data and populate state
   useEffect(() => {
     if (courseByIdData?.course) {
-      const course = courseByIdData?.course;
+      const course = courseByIdData.course;
+
       setInput({
         courseTitle: course.courseTitle || "",
         subTitle: course.subTitle || "",
-        description: course.description || "",
+        description: course.description
+          ? course.description.replace(/<[^>]+>/g, "").trim()
+          : "",
+        descriptionHtml: course.description || "",
         category: course.category || "",
         courseLevel: course.courseLevel || "",
         coursePrice: course.coursePrice ?? "",
         courseThumbnail: "",
       });
+
+      if (course.courseThumbnail) {
+        setPreviewThumbnail(course.courseThumbnail);
+      }
     }
   }, [courseByIdData]);
 
-  const [previewThumbnail, setPreviewThumbnail] = useState("");
-
-  const navigate = useNavigate();
-
-  const [editCourse, { data, isLoading, isSuccess, error }] =
-    useEditCourseMutation();
-
+  // Handlers
   const changeEventHandler = (e) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
@@ -85,7 +95,6 @@ const CourseTab = () => {
     setInput({ ...input, courseLevel: value });
   };
 
-  //file
   const selectThumbnail = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -111,8 +120,9 @@ const CourseTab = () => {
 
     await editCourse({ formData, courseId });
   };
+
   const handleSaveAndNavigate = async () => {
-    await updateCourseHandler(); 
+    await updateCourseHandler();
     navigate("/admin/course");
   };
 
@@ -123,19 +133,21 @@ const CourseTab = () => {
         refetch();
         toast.success(response.data.message);
       }
-    } catch (error) {
-      toast.error(data.message || "Failed to publish or unpublish Course");
+    } catch {
+      toast.error(data?.message || "Failed to publish/unpublish course");
     }
   };
 
+  // Toasts for success/error
   useEffect(() => {
     if (isSuccess) {
-      toast.success(data.message || "Course updated.");
+      toast.success(data?.message || "Course updated successfully.");
     }
     if (error) {
-      toast.error(error.data.message || "Failed to update course.");
+      toast.error(error?.data?.message || "Failed to update course.");
     }
   }, [isSuccess, error]);
+
   if (courseByIdLoading) return <Loader2 className="h-4 w-4 animate-spin" />;
 
   return (
@@ -164,6 +176,7 @@ const CourseTab = () => {
           <Button variant="destructive">Delete Course</Button>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="space-y-4 mt-5">
           <div>
@@ -171,11 +184,12 @@ const CourseTab = () => {
             <Input
               type="text"
               name="courseTitle"
-              value={input.courseTitle || ""}
+              value={input.courseTitle}
               onChange={changeEventHandler}
               placeholder="Enter the main title of your course"
             />
           </div>
+
           <div>
             <Label className="my-1">Course Subtitle</Label>
             <Input
@@ -186,10 +200,12 @@ const CourseTab = () => {
               placeholder="Provide a short, descriptive subtitle"
             />
           </div>
+
           <div>
             <Label className="my-1">Course Description</Label>
             <RichTextEditor input={input} setInput={setInput} />
           </div>
+
           <div className="flex items-center gap-5">
             <div>
               <Label className="my-1">Category</Label>
@@ -221,6 +237,7 @@ const CourseTab = () => {
                 </SelectContent>
               </Select>
             </div>
+
             <div>
               <Label className="my-1">Course Level</Label>
               <Select
@@ -240,20 +257,22 @@ const CourseTab = () => {
                 </SelectContent>
               </Select>
             </div>
+
             <div>
               <Label className="my-1">Price (INR)</Label>
               <Input
                 type="number"
                 name="coursePrice"
-                value={input.coursePrice || ""}
+                value={input.coursePrice}
                 onChange={changeEventHandler}
                 placeholder="Enter course price, e.g., 199"
-                className="w-fit"
                 min={0}
                 step={1}
+                className="w-fit"
               />
             </div>
           </div>
+
           <div>
             <Label className="my-1">Course Thumbnail</Label>
             <Input

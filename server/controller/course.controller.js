@@ -82,6 +82,10 @@ export const editCourse = async (req, res) => {
     }
     //upload thumbnail
     courseThumbnail = await uploadMedia(thumbnail.path);
+    if (req.file) {
+      const uploadResponse = await uploadMedia(req.file.path);
+      course.courseThumbnail = uploadResponse.secure_url; // store secure_url
+    }
 
     //update data
     const updateData = {
