@@ -42,8 +42,11 @@ const CourseTab = () => {
   const params = useParams();
   const courseId = params.courseId;
 
-  const { data: courseByIdData, isLoading: courseByIdLoading,refetch } =
-    useGetCourseByIdQuery(courseId, { refetchOnMountOrArgChange: true });
+  const {
+    data: courseByIdData,
+    isLoading: courseByIdLoading,
+    refetch,
+  } = useGetCourseByIdQuery(courseId, { refetchOnMountOrArgChange: true });
 
   const [publishCourse, {}] = usePublishCourseMutation();
 
@@ -108,12 +111,16 @@ const CourseTab = () => {
 
     await editCourse({ formData, courseId });
   };
+  const handleSaveAndNavigate = async () => {
+    await updateCourseHandler(); 
+    navigate("/admin/course");
+  };
 
   const publishStatusHandler = async (action) => {
     try {
       const response = await publishCourse({ courseId, query: action });
       if (response.data) {
-        refetch()
+        refetch();
         toast.success(response.data.message);
       }
     } catch (error) {
@@ -271,7 +278,7 @@ const CourseTab = () => {
             <Button
               variant="outline"
               disabled={isLoading}
-              onClick={updateCourseHandler}
+              onClick={handleSaveAndNavigate}
             >
               {isLoading ? (
                 <>
