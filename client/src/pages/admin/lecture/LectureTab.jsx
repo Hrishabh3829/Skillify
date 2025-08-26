@@ -40,7 +40,15 @@ const LectureTab = () => {
     if (lecture) {
       setLectureTitle(lecture.lectureTitle);
       setIsFree(lecture.isPreviewFree);
-      setUploadVideoInfo(lecture.videoInfo);
+      // Prefill from saved lecture fields (videoInfo isn't stored on the doc)
+      if (lecture.videoUrl || lecture.publicId) {
+        setUploadVideoInfo({
+          videoUrl: lecture.videoUrl || null,
+          publicId: lecture.publicId || null,
+        });
+      } else {
+        setUploadVideoInfo(null);
+      }
     }
   }, [lecture]);
 
@@ -65,8 +73,9 @@ const LectureTab = () => {
           },
         });
         if (res.data.success) {
+          // Use secure_url to avoid mixed-content issues over HTTPS
           setUploadVideoInfo({
-            videoUrl: res.data.data.url,
+            videoUrl: res.data.data.secure_url || res.data.data.url,
             publicId: res.data.data.public_id,
           });
           setBtnDisable(false);

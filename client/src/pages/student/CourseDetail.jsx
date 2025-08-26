@@ -13,20 +13,39 @@ import React from "react";
 import BuyCourseButton from "../BuyCourseButton";
 import { useParams } from "react-router-dom";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
-import ReactPlayer from "react-player";
-
+// Using native <video> for robust Cloudinary playback
 
 const CourseDetail = () => {
   const params = useParams();
   const courseId = params.courseId;
+  // All hooks must run unconditionally in the same order every render
   const { data, isLoading, isError } =
     useGetCourseDetailWithStatusQuery(courseId);
 
   if (isLoading) return <h1>Loading...</h1>;
 
-  if (isError) return <h>Failed to load course details</h>;
+  if (isError) return <h1>Failed to load course details</h1>;
 
   const { course, purchased } = data;
+  // Choose a preview lecture: first free preview with video, else first with any video
+  const previewLecture =
+    course?.lectures?.find((l) => l?.isPreviewFree && l?.videoUrl) ||
+    course?.lectures?.find((l) => l?.videoUrl) ||
+    course?.lectures?.[0];
+  // Normalize Cloudinary URL to https to avoid mixed content blocks
+  const rawUrl = previewLecture?.videoUrl;
+  const playerUrl = rawUrl?.startsWith("http://res.cloudinary.com")
+    ? rawUrl.replace("http://", "https://")
+    : rawUrl;
+
+  // Build Cloudinary transformed URLs for wider browser support
+  const isCloudinary =
+    playerUrl?.includes("res.cloudinary.com") && playerUrl.includes("/upload/");
+  const withTransform = (url, transform) =>
+    isCloudinary ? url.replace("/upload/", `/upload/${transform}/`) : url;
+  const mp4Url = withTransform(playerUrl || "", "f_mp4,vc_h264,q_auto");
+  const webmUrl = withTransform(playerUrl || "", "f_webm,vc_vp9,q_auto");
+  const autoUrl = withTransform(playerUrl || "", "f_auto,vc_auto,q_auto");
 
   return (
     <div className="mt-20">
@@ -90,15 +109,39 @@ const CourseDetail = () => {
           <Card>
             <CardContent className="p-4 flex flex-col">
               <div className="w-full aspect-video mb-4 bg-gray-200 flex items-center justify-center text-gray-600">
-                <ReactPlayer
-                  width="100%"
-                  height={"100%"}
-                  url={course.lectures[0].videoUrl}
-                  controls={true}
-                />
+                {playerUrl ? (
+                  <video
+                    key={playerUrl}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    onError={(e) => {
+                      // eslint-disable-next-line no-console
+                      console.error("Native video error:", e);
+                    }}
+                  >
+                    {isCloudinary ? (
+                      <>
+                        <source src={mp4Url} type="video/mp4" />
+                        <source src={webmUrl} type="video/webm" />
+                        <source src={autoUrl} />
+                      </>
+                    ) : (
+                      <source src={playerUrl} />
+                    )}
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <span>No preview available</span>
+                )}
               </div>
               <h3 className="font-semibold text-lg md:text-xl">
-                Lecture Title
+                {previewLecture?.lectureTitle || "Lecture Title"}
               </h3>
               <Separator className="my-2" />
               <h4 className="text-lg md:text-xl font-semibold">
