@@ -95,25 +95,24 @@ export const editCourse = async (req, res) => {
 
     let course = await Course.findById(courseId);
     if (!course) {
-      return res.status(404).json({
-        message: "Course not found!",
-      });
-    }
-    let courseThumbnail;
-    if (thumbnail) {
-      if (course.courseThumbnail) {
-        const publicId = course.courseThumbnail.split("/").pop().split(".")[0];
-        await deleteMediaFromCloudinary(publicId); //delete old image
-      }
-    }
-    //upload thumbnail
-    courseThumbnail = await uploadMedia(thumbnail.path);
-    if (req.file) {
-      const uploadResponse = await uploadMedia(req.file.path);
-      course.courseThumbnail = uploadResponse.secure_url; // store secure_url
+      return res.status(404).json({ message: "Course not found!" });
     }
 
-    //update data
+    let courseThumbnail;
+
+    if (thumbnail) {
+      // Delete old thumbnail if exists
+      if (course.courseThumbnail) {
+        const publicId = course.courseThumbnail.split("/").pop().split(".")[0];
+        await deleteMediaFromCloudinary(publicId);
+      }
+
+      // Upload new thumbnail
+      const uploadResponse = await uploadMedia(thumbnail.path);
+      courseThumbnail = uploadResponse.secure_url;
+    }
+
+    // Update course
     const updateData = {
       courseTitle,
       subTitle,
@@ -121,22 +120,24 @@ export const editCourse = async (req, res) => {
       category,
       courseLevel,
       coursePrice,
-      courseThumbnail: courseThumbnail?.secure_url,
     };
+
+    if (courseThumbnail) {
+      updateData.courseThumbnail = courseThumbnail;
+    }
+
     course = await Course.findByIdAndUpdate(courseId, updateData, {
       new: true,
     });
 
-    return res.status(200).json({
-      course,
-      message: "Course updated successfully.",
-    });
+    return res
+      .status(200)
+      .json({ course, message: "Course updated successfully." });
   } catch (error) {
     console.error("editCourses error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to update course.",
-    });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to update course." });
   }
 };
 
