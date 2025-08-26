@@ -13,6 +13,8 @@ import React from "react";
 import BuyCourseButton from "../BuyCourseButton";
 import { useParams } from "react-router-dom";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
+import ReactPlayer from "react-player";
+
 
 const CourseDetail = () => {
   const params = useParams();
@@ -88,12 +90,12 @@ const CourseDetail = () => {
           <Card>
             <CardContent className="p-4 flex flex-col">
               <div className="w-full aspect-video mb-4 bg-gray-200 flex items-center justify-center text-gray-600">
-                {/* <ReactPlayer
+                <ReactPlayer
                   width="100%"
                   height={"100%"}
                   url={course.lectures[0].videoUrl}
                   controls={true}
-                /> */}
+                />
               </div>
               <h3 className="font-semibold text-lg md:text-xl">
                 Lecture Title
