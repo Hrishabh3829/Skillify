@@ -106,6 +106,27 @@ const CourseTab = () => {
   };
 
   const updateCourseHandler = async () => {
+    if (!input.subTitle.trim()) {
+      toast.error("Course subtitle is required.");
+      return false;
+    }
+    if (!input.category) {
+      toast.error("Please select a course category.");
+      return false;
+    }
+    if (!input.courseLevel) {
+      toast.error("Please choose a course level.");
+      return false;
+    }
+    if (!input.courseThumbnail && !previewThumbnail) {
+      toast.error("A course thumbnail is required.");
+      return false;
+    }
+    if (Number(input.coursePrice) < 100) {
+      toast.error("Course price must be at least ₹100.");
+      return false;
+    }
+
     const formData = new FormData();
     formData.append("courseTitle", input.courseTitle);
     formData.append("subTitle", input.subTitle);
@@ -119,11 +140,14 @@ const CourseTab = () => {
     }
 
     await editCourse({ formData, courseId });
+    return true;
   };
 
   const handleSaveAndNavigate = async () => {
-    await updateCourseHandler();
-    navigate("/admin/course");
+    const success = await updateCourseHandler();
+    if (success) {
+      navigate("/admin/course");
+    }
   };
 
   const publishStatusHandler = async (action) => {
@@ -267,8 +291,8 @@ const CourseTab = () => {
                 value={input.coursePrice}
                 onChange={changeEventHandler}
                 placeholder="Enter course price, e.g., 199"
-                min={0}
-                step={1}
+                min={100}
+                step={100}
                 className="w-fit"
               />
             </div>
