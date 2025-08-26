@@ -38,7 +38,7 @@ const CourseTab = () => {
     category: "",
     courseLevel: "",
     coursePrice: "",
-    courseThumbnail: "", // file object if user selects
+    courseThumbnail: "",
   });
 
   const [previewThumbnail, setPreviewThumbnail] = useState(""); // preview URL
@@ -139,8 +139,14 @@ const CourseTab = () => {
       formData.append("courseThumbnail", input.courseThumbnail);
     }
 
-    await editCourse({ formData, courseId });
-    return true;
+    try {
+      const response = await editCourse({ formData, courseId }).unwrap();
+      toast.success(response.message || "Course updated successfully.");
+      return true;
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to update course.");
+      return false;
+    }
   };
 
   const handleSaveAndNavigate = async () => {
