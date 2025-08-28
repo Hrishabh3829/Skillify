@@ -11,13 +11,14 @@ import { Separator } from "@/components/ui/separator";
 import { BadgeInfo, Lock, PlayCircle } from "lucide-react";
 import React from "react";
 import BuyCourseButton from "../BuyCourseButton";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
 // Using native <video> for robust Cloudinary playback
 
 const CourseDetail = () => {
   const params = useParams();
   const courseId = params.courseId;
+  const navigate = useNavigate();
   // All hooks must run unconditionally in the same order every render
   const { data, isLoading, isError } =
     useGetCourseDetailWithStatusQuery(courseId);
@@ -46,6 +47,12 @@ const CourseDetail = () => {
   const mp4Url = withTransform(playerUrl || "", "f_mp4,vc_h264,q_auto");
   const webmUrl = withTransform(playerUrl || "", "f_webm,vc_vp9,q_auto");
   const autoUrl = withTransform(playerUrl || "", "f_auto,vc_auto,q_auto");
+
+  const handleContinueCourse = () => {
+    if (purchased) {
+      navigate(`/course-progress/${courseId}`);
+    }
+  };
 
   return (
     <div className="mt-20">
@@ -145,12 +152,14 @@ const CourseDetail = () => {
               </h3>
               <Separator className="my-2" />
               <h4 className="text-lg md:text-xl font-semibold">
-                {course?.coursePrice}
+                ₹{course?.coursePrice}
               </h4>
             </CardContent>
             <CardFooter className="flex justify-center p-4">
               {purchased ? (
-                <Button className="w-full">Continue Course</Button>
+                <Button onClick={handleContinueCourse} className="w-full">
+                  Continue Course
+                </Button>
               ) : (
                 <BuyCourseButton courseId={courseId} />
               )}
