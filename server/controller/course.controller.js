@@ -33,22 +33,43 @@ export const createCourse = async (req, res) => {
 
 export const searchCourse = async (req, res) => {
   try {
-    const { query = "", categories = [], sortByPrice = "" } = req.query;
-
-    //create search query
-    const searchCriteria = {
-      isPublished: true,
-      $or: [
-        { courseTitle: { $regex: query, $options: "i" } },
-        { subTitle: { $regex: query, $options: "i" } },
-        { category: { $regex: query, $options: "i" } },
-      ],
-    };
-
-    //if categories selected
-    if (categories.length > 0) {
-      searchCriteria.category = { $in: categories };
+    let { query = "", categories = [], sortByPrice = "" } = req.query;
+    // Support comma-separated categories from client
+    if (typeof categories === "string" && categories.length > 0) {
+      categories = categories.split(",").map((c) => c.trim()).filter(Boolean);
     }
+
+    const trimmedQuery = String(query || "").trim();
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const andConditions = [{ isPublished: true }];
+
+    if (trimmedQuery) {
+      andConditions.push({
+        $or: [
+          { courseTitle: { $regex: trimmedQuery, $options: "i" } },
+          { subTitle: { $regex: trimmedQuery, $options: "i" } },
+          { category: { $regex: trimmedQuery, $options: "i" } },
+        ],
+      });
+    }
+
+    if (Array.isArray(categories) && categories.length > 0) {
+      // Partial, case-insensitive match for user-friendly filtering
+      const categoryMatchers = categories
+        .map((c) => c.trim())
+        .filter(Boolean)
+        .map((c) => new RegExp(escapeRegex(c), "i"));
+
+      andConditions.push({
+        $or: [
+          { category: { $in: categoryMatchers } },
+          { courseTitle: { $in: categoryMatchers } },
+          { subTitle: { $in: categoryMatchers } },
+        ],
+      });
+    }
+
+    const searchCriteria = andConditions.length > 1 ? { $and: andConditions } : andConditions[0];
 
     //define sorting order
     const sortOptions = {};
