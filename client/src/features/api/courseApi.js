@@ -19,12 +19,13 @@ export const courseApi = createApi({
     }),
 
     getSearchCourse: builder.query({
-      query: (searchQuery, categories, sortByPrice) => {
+      query: ({ searchQuery = "", categories = [], sortByPrice = "" }) => {
+        const q = typeof searchQuery === "string" ? searchQuery : "";
         //build query string
-        let queryString = `/search?query=${encodeURIComponent(searchQuery)}`;
+        let queryString = `/search?query=${encodeURIComponent(q)}`;
 
         //append category
-        if (categories && categories.length > 0) {
+        if (Array.isArray(categories) && categories.length > 0) {
           const categoriesString = categories.map(encodeURIComponent).join(",");
           queryString += `&categories=${categoriesString}`;
         }
