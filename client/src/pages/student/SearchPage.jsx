@@ -40,7 +40,7 @@ const SearchPage = () => {
         <Filter handleFilterChange={handleFilterChange} />
         <div className="flex-1">
           {isLoading ? (
-            Array.from({ length: 3 }).map((_, idx) => (
+            Array.from({ length: data?.courses?.length || 8 }).map((_, idx) => (
               <CourseSkeleton key={idx} />
             ))
           ) : isEmpty ? (
