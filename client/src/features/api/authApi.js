@@ -71,6 +71,16 @@ export const authApi = createApi({
         body: formData,
         credentials: "include",
       }),
+      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+        try {
+          const result = await queryFulfilled;
+          if (result?.data?.user) {
+            dispatch(userLoggedIn({ user: result.data.user }));
+          }
+        } catch (e) {
+          // noop
+        }
+      },
     }),
   }),
 });

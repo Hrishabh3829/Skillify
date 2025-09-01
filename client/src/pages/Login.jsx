@@ -93,7 +93,12 @@ const Login = () => {
 
     if (loginIsSuccess && loginData) {
       toast.success(loginData.message || "Login Successfull.");
-      navigate("/");
+      const role = loginData?.user?.role;
+      if (role === "instructor") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     }
 
     if (loginError) {
