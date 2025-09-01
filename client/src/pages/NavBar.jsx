@@ -88,7 +88,7 @@ const NavBar = () => {
                   <DropdownMenuItem onClick={logoutHandler}>
                     Logout <LogOut className="ml-2 h-4 w-4" />
                   </DropdownMenuItem>
-                  {user.role === "instructor" && (
+                  {user?.role === "instructor" && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>
@@ -117,7 +117,7 @@ const NavBar = () => {
       <div className="flex md:hidden items-center justify-between px-4 h-full">
         <h1 className="font-extrabold text-2xl">E-Learning</h1>
 
-        <MobileNavbar />
+        <MobileNavbar user={user} />
       </div>
     </div>
   );
@@ -125,15 +125,23 @@ const NavBar = () => {
 
 export default NavBar;
 
-const MobileNavbar = () => {
-  const role = "instructor";
+const MobileNavbar = ({ user }) => {
+  const navigate = useNavigate();
+  const [logoutUser] = useLogoutUserMutation();
+  const onLogout = async () => {
+    try {
+      await logoutUser();
+    } finally {
+      navigate("/login");
+    }
+  };
 
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="rounded-full bg-gray-200 hover:bg-gray-200"
+          className="rounded-full  hover:bg-gray-200"
           variant="outline"
         >
           <Menu />
@@ -143,7 +151,11 @@ const MobileNavbar = () => {
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
           <div className=" flex mt-2 gap-8">
             <SheetTitle className="font-stretch-50% text-2xl">
-              E-Learning
+              <SheetClose asChild>
+                <Link to={"/"}>
+                  <Button>E-Learning</Button>
+                </Link>
+              </SheetClose>
             </SheetTitle>
 
             <DarkMode />
@@ -151,14 +163,70 @@ const MobileNavbar = () => {
         </SheetHeader>
         <Separator className="mr-2" />
         <nav className="flex flex-col space-y-4 mx-4">
-          <span>My Learning</span>
-          <span>Edit Profile</span>
-          <p>Logout</p>
+          {user ? (
+            <>
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/my-learning")}
+                  className="w-full text-left"
+                >
+                  My Learning
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/profile")}
+                  className="w-full text-left"
+                >
+                  Edit Profile
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  onClick={onLogout}
+                  className="w-full text-left"
+                >
+                  Logout
+                </Button>
+              </SheetClose>
+            </>
+          ) : (
+            <>
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/login")}
+                  className="w-full text-left"
+                >
+                  Login
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/login")}
+                  className="w-full text-left"
+                >
+                  Signup
+                </Button>
+              </SheetClose>
+            </>
+          )}
         </nav>
-        {role === "instructor" && (
+
+        {user?.role === "instructor" && (
           <SheetFooter>
             <SheetClose asChild>
-              <Button type="submit">Dashboard</Button>
+              <Button
+                type="button"
+                onClick={() => navigate("/admin/dashboard")}
+                className="w-full"
+              >
+                Dashboard
+              </Button>
             </SheetClose>
           </SheetFooter>
         )}

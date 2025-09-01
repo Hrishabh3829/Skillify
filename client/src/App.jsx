@@ -3,9 +3,7 @@ import Login from "./pages/Login";
 import { HeroSection } from "./pages/student/HeroSection";
 import { MainLayout } from "./layout/MainLayout";
 import { RouterProvider } from "react-router";
-import { useEffect } from "react";
 import { useLoadUserQuery } from "@/features/api/authApi";
-import { useSelector } from "react-redux";
 import { Courses } from "./pages/student/Courses";
 import { MyLearning } from "./pages/student/MyLearning";
 import { Profile } from "./pages/student/Profile";
@@ -25,7 +23,6 @@ import {
   ProtectedRoute,
 } from "./pages/ProtectedRoute";
 import PurchaseCourseProtectedRoute from "./pages/PurchaseCourseProtectedRoute";
-import { ThemeProvider } from "./components/ThemeProvider";
 
 const appRouter = createBrowserRouter([
   {
@@ -86,8 +83,7 @@ const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PurchaseCourseProtectedRoute>
-
-            <CourseProgress />,
+              <CourseProgress />,
             </PurchaseCourseProtectedRoute>
           </ProtectedRoute>
         ),
@@ -95,10 +91,11 @@ const appRouter = createBrowserRouter([
       //admin
       {
         path: "admin",
-        element: 
+        element: (
           <AdminRoute>
             <SideBar />
-          </AdminRoute>,
+          </AdminRoute>
+        ),
 
         children: [
           {
@@ -131,7 +128,6 @@ const appRouter = createBrowserRouter([
   },
 ]);
 function App() {
-  // Ensure user is loaded on app start/refresh
   useLoadUserQuery();
   return (
     <main>
