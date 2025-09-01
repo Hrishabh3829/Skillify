@@ -145,7 +145,10 @@ export const getUserProfile = async (req, res) => {
     const userId = req.id;
     const user = await User.findById(userId)
       .select("-password")
-      .populate("enrolledCourses");
+      .populate({
+        path: "enrolledCourses",
+        populate: { path: "creator", select: "name photoUrl" },
+      });
       
     if (!user) {
       return res.status(404).json({
