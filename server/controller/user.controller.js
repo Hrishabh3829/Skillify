@@ -49,6 +49,8 @@ export const register = async (req, res) => {
           _id: newUser._id,
           name: newUser.name,
           email: newUser.email,
+          role: newUser.role,
+          photoUrl: newUser.photoUrl || "",
         },
       });
   } catch (error) {
@@ -105,6 +107,8 @@ export const login = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          role: user.role,
+          photoUrl: user.photoUrl || "",
         },
       });
   } catch (error) {

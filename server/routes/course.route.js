@@ -24,7 +24,7 @@ router.route("/").post(isAuthenticated, createCourse);
 
 router.route("/search").get(isAuthenticated, searchCourse);
 
-router.route("/published-courses").get(isAuthenticated, getPublishedCourse);
+router.route("/published-courses").get(getPublishedCourse);
 
 router.route("/").get(isAuthenticated, getCreatorCourses);
 router
