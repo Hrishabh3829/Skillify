@@ -50,7 +50,7 @@ const appRouter = createBrowserRouter([
         path: "my-learning",
         element: (
           <ProtectedRoute>
-            <MyLearning />,
+            <MyLearning />
           </ProtectedRoute>
         ),
       },
@@ -58,7 +58,7 @@ const appRouter = createBrowserRouter([
         path: "profile",
         element: (
           <ProtectedRoute>
-            <Profile />,
+            <Profile />
           </ProtectedRoute>
         ),
       },
@@ -66,7 +66,7 @@ const appRouter = createBrowserRouter([
         path: "course/search",
         element: (
           <ProtectedRoute>
-            <SearchPage />,
+            <SearchPage />
           </ProtectedRoute>
         ),
       },
@@ -74,7 +74,7 @@ const appRouter = createBrowserRouter([
         path: "course-detail/:courseId",
         element: (
           <ProtectedRoute>
-            <CourseDetail />,
+            <CourseDetail />
           </ProtectedRoute>
         ),
       },
@@ -83,7 +83,7 @@ const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PurchaseCourseProtectedRoute>
-              <CourseProgress />,
+              <CourseProgress />
             </PurchaseCourseProtectedRoute>
           </ProtectedRoute>
         ),
@@ -100,27 +100,27 @@ const appRouter = createBrowserRouter([
         children: [
           {
             path: "dashboard",
-            element: <Dashboard />,
+            element: <Dashboard />
           },
           {
             path: "course",
-            element: <Coursetable />,
+            element: <Coursetable />
           },
           {
             path: "course/create",
-            element: <AddCourse />,
+            element: <AddCourse />
           },
           {
             path: "course/:courseId",
-            element: <EditCourse />,
+            element: <EditCourse />
           },
           {
             path: "course/:courseId/lecture",
-            element: <CreateLecture />,
+            element: <CreateLecture />
           },
           {
             path: "course/:courseId/lecture/:lectureId",
-            element: <EditLecture />,
+            element: <EditLecture />
           },
         ],
       },

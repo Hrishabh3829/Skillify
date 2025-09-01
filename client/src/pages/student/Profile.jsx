@@ -191,7 +191,7 @@ export const Profile = () => {
             </h1>
           ) : (
             enrolledCourses.map((course) => (
-              <Course course={course} key={course._id || course} />
+              <Course compact course={course} key={course._id || course} />
             ))
           )}
         </div>
