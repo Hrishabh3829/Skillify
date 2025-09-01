@@ -112,13 +112,13 @@ const LectureTab = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      refetch();
       toast.success(data.message);
+      navigate(`/admin/course/${courseId}/lecture`);
     }
     if (error) {
       toast.error(error.data.message);
     }
-  }, [isSuccess, error]);
+  }, [isSuccess, error, data, navigate, courseId]);
 
   useEffect(() => {
     if (removeSuccess) {

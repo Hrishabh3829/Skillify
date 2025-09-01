@@ -10,6 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { BadgeInfo, Lock, PlayCircle } from "lucide-react";
 import React from "react";
+import DOMPurify from "dompurify";
 import BuyCourseButton from "../BuyCourseButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
@@ -85,9 +86,10 @@ const CourseDetail = () => {
         {/* Left Side */}
         <section className="w-full lg:w-2/3 space-y-5">
           <h2 className="font-bold text-xl md:text-2xl">Description</h2>
-          <p
-            className="text-sm md:text-base text-gray-700 leading-relaxed dark:text-gray-300"
-            dangerouslySetInnerHTML={{ __html: course?.description }}
+          <div
+            className="prose prose-sm md:prose base text-gray-700 dark:text-gray-300 max-w-none"
+            // Sanitize HTML to avoid XSS since we render instructor-provided content
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(course?.description || "") }}
           />
 
           <Card>

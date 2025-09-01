@@ -130,7 +130,8 @@ const CourseTab = () => {
     const formData = new FormData();
     formData.append("courseTitle", input.courseTitle);
     formData.append("subTitle", input.subTitle);
-    formData.append("description", input.description);
+  // Store the rich HTML so formatting (bold, italic, lists) is preserved
+  formData.append("description", input.descriptionHtml);
     formData.append("category", input.category);
     formData.append("courseLevel", input.courseLevel);
     formData.append("coursePrice", input.coursePrice);
