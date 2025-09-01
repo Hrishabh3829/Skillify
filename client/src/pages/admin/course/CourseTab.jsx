@@ -183,7 +183,7 @@ const CourseTab = () => {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row justify-between">
+      <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <CardTitle>Course Overview</CardTitle>
           <CardDescription>
@@ -191,7 +191,7 @@ const CourseTab = () => {
             <strong>Save</strong> once all changes are finalized.
           </CardDescription>
         </div>
-        <div className="space-x-2">
+        <div className="space-x-2 flex flex-wrap">
           <Button
             disabled={courseByIdData?.course.lectures.length === 0}
             variant="outline"
@@ -209,7 +209,7 @@ const CourseTab = () => {
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="overflow-x-hidden">
         <div className="space-y-4 mt-5">
           <div>
             <Label className="my-1">Course Title</Label>
@@ -235,14 +235,16 @@ const CourseTab = () => {
 
           <div>
             <Label className="my-1">Course Description</Label>
-            <RichTextEditor input={input} setInput={setInput} />
+            <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-800">
+              <RichTextEditor input={input} setInput={setInput} />
+            </div>
           </div>
 
-          <div className="flex items-center gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
               <Label className="my-1">Category</Label>
               <Select value={input.category} onValueChange={selectCategory}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full md:w-[180px]">
                   <SelectValue placeholder="Choose a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -276,7 +278,7 @@ const CourseTab = () => {
                 value={input.courseLevel}
                 onValueChange={selectCourseLevel}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full md:w-[180px]">
                   <SelectValue placeholder="Select difficulty level" />
                 </SelectTrigger>
                 <SelectContent>
@@ -300,7 +302,7 @@ const CourseTab = () => {
                 placeholder="Enter course price, e.g., 199"
                 min={100}
                 step={100}
-                className="w-fit"
+        className="w-full md:w-fit"
               />
             </div>
           </div>
@@ -311,18 +313,18 @@ const CourseTab = () => {
               type="file"
               onChange={selectThumbnail}
               accept="image/*"
-              className="w-fit"
+              className="w-full sm:w-fit"
             />
             {previewThumbnail && (
               <img
                 src={previewThumbnail}
-                className="w-64 my-2"
+                className="my-2 max-w-full h-auto sm:max-w-sm md:w-64 rounded"
                 alt="CourseThumbnail"
               />
             )}
           </div>
 
-          <div className="flex space-x-2 mt-4">
+          <div className="flex flex-wrap gap-2 mt-4">
             <Button onClick={() => navigate("/admin/course")} variant="outline">
               Cancel
             </Button>

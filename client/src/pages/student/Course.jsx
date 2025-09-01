@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 export const Course = ({ course }) => {
   return (
   <Link to={`/course-detail/${course._id}`}>
-      <Card className="overflow-hidden rounded-lg dark:bg-gray-800 bg-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 p-0">
+  <Card className="overflow-hidden rounded-lg dark:bg-gray-900 bg-white shadow-lg hover:shadow-2xl transform hover:scale-[1.02] transition-transform duration-300 p-0">
         {/* Image */}
         <div className="relative">
           <img
@@ -17,7 +17,7 @@ export const Course = ({ course }) => {
           />
         </div>
 
-        <CardContent className="px-5 py-4 space-y-3">
+  <CardContent className="px-4 sm:px-5 py-4 space-y-3">
           {/* Course Title */}
           <h1 className="hover:underline font-bold text-base sm:text-lg line-clamp-2">
             {course.courseTitle}
@@ -38,7 +38,7 @@ export const Course = ({ course }) => {
             </Badge>
           </div>
 
-          <div className="text-lg sm:text-xl font-bold text-green-600">
+          <div className="text-lg sm:text-xl font-bold text-green-600 dark:text-green-400">
             ₹{course.coursePrice}
           </div>
         </CardContent>

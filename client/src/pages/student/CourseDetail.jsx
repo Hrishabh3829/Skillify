@@ -58,7 +58,7 @@ const CourseDetail = () => {
   return (
     <div className="mt-20">
       {/* Header Section */}
-      <header className="bg-[#212224] text-white">
+  <header className="bg-[#212224] text-white dark:bg-[#0e0f10]">
         <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2">
           <h1 className="font-bold text-2xl md:text-3xl">
             {course?.courseTitle}
@@ -82,12 +82,12 @@ const CourseDetail = () => {
       </header>
 
       {/* Main Section */}
-      <main className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex flex-col lg:flex-row justify-between gap-10">
+  <main className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex flex-col lg:flex-row justify-between gap-10">
         {/* Left Side */}
         <section className="w-full lg:w-2/3 space-y-5">
           <h2 className="font-bold text-xl md:text-2xl">Description</h2>
           <div
-            className="prose prose-sm md:prose base text-gray-700 dark:text-gray-300 max-w-none"
+            className="prose prose-sm md:prose-base text-gray-800 dark:text-gray-200 max-w-none prose-headings:mb-2 prose-p:leading-relaxed prose-li:marker:text-gray-500 dark:prose-invert"
             // Sanitize HTML to avoid XSS since we render instructor-provided content
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(course?.description || "") }}
           />
@@ -119,7 +119,7 @@ const CourseDetail = () => {
         <aside className="w-full lg:w-1/3">
           <Card>
             <CardContent className="p-4 flex flex-col">
-              <div className="w-full aspect-video mb-4 bg-gray-200 flex items-center justify-center text-gray-600">
+              <div className="w-full aspect-video mb-4 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 rounded-md overflow-hidden">
                 {playerUrl ? (
                   <video
                     key={playerUrl}

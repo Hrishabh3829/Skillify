@@ -26,10 +26,60 @@ const Coursetable = () => {
     }, 0) || 0;
 
   return (
-    <div>
-      <Button onClick={() => navigate(`create`)}>Create a new course</Button>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button onClick={() => navigate(`create`)}>Create a new course</Button>
+      </div>
 
-      <Table>
+      {/* Mobile list (cards) */}
+      <div className="md:hidden grid gap-3">
+        {data?.courses?.length ? (
+          data.courses.map((course) => (
+            <div
+              key={course._id}
+              className="rounded-md border border-gray-200 dark:border-gray-800 p-4 bg-white dark:bg-gray-900"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-base line-clamp-2">
+                    {course.courseTitle}
+                  </h3>
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {course.coursePrice ? `₹${course.coursePrice}` : "NA"}
+                    </span>
+                    <Badge
+                      className={
+                        course.isPublished
+                          ? "bg-green-500 text-white dark:bg-green-600"
+                          : "bg-yellow-400 text-black dark:bg-yellow-500 dark:text-black"
+                      }
+                    >
+                      {course.isPublished ? "Published" : "Draft"}
+                    </Badge>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => navigate(`${course._id}`)}
+                  className="shrink-0"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-600 dark:text-gray-400">
+            No courses found
+          </p>
+        )}
+      </div>
+
+      {/* Desktop/Tablet table */}
+      <div className="hidden md:block w-full overflow-x-auto rounded-md border border-gray-200 dark:border-gray-800">
+      <Table className="min-w-[720px]">
         <TableCaption>A list of your recent courses</TableCaption>
         <TableHeader>
           <TableRow>
@@ -85,11 +135,13 @@ const Coursetable = () => {
             <TableRow>
               <TableCell colSpan={4} className="text-center">
                 No courses found
+                
               </TableCell>
             </TableRow>
           )}
         </TableBody>
-      </Table>
+  </Table>
+  </div>
     </div>
   );
 };

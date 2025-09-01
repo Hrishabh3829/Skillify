@@ -6,12 +6,12 @@ import CourseTab from "./CourseTab";
 const EditCourse = () => {
   return (
     <div className="flex-1">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
         <h1 className="font-bold text-xl">
           Provide Detailed Information About the Course
         </h1>
         <Link to="lecture">
-          <Button className={"hover:text-shadow-blue-600"} variant="outline">
+          <Button className={"hover:text-shadow-blue-600 w-full sm:w-auto"} variant="outline">
             Manage Course Lectures
           </Button>
         </Link>

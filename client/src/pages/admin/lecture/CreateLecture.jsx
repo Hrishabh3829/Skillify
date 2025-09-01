@@ -49,7 +49,7 @@ const CreateLecture = () => {
   }, [isSuccess, error, data]);
 
   return (
-    <div className="flex-1 mx-10">
+    <div className="flex-1 mx-4 sm:mx-6 md:mx-10">
       {/* Page Header */}
       <div className="mb-4">
         <h1 className="font-bold text-2xl text-gray-800 dark:text-white">
@@ -78,7 +78,7 @@ const CreateLecture = () => {
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center gap-3">
+  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <Button
             variant="outline"
             onClick={() => navigate(`/admin/course/${courseId}`)}
@@ -110,7 +110,7 @@ const CreateLecture = () => {
         </div>
 
         {/* Lecture List */}
-        <div className="mt-10">
+  <div className="mt-10">
           {lectureLoading ? (
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Loader2 className="animate-spin" />

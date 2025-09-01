@@ -40,7 +40,7 @@ export const AddCourse = () => {
   }, [isSuccess, error]);
 
   return (
-    <div className="flex-1 mx-10">
+  <div className="flex-1 mx-4 sm:mx-6 md:mx-10">
       <div className="mb-4">
         <h1 className="font-bold text-xl ">Ready to add your course.</h1>
         <p className="text-sm ">
@@ -57,7 +57,7 @@ export const AddCourse = () => {
             placeholder="Your Course Name"
           />
         </div>
-        <div className="flex items-center gap-2">
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <Label>Category</Label>
           <Select onValueChange={getSelectedCategory}>
             <SelectTrigger className="w-[180px]">
@@ -83,7 +83,7 @@ export const AddCourse = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <Button variant="outline" onClick={() => navigate(`/admin/course`)}>
             Back
           </Button>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const SearchResult = ({ course }) => {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-300 py-4 gap-4 ">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 dark:border-gray-700 py-4 gap-4 ">
       <Link
         to={`/course-detail/${course._id}`}
         className="flex flex-col md:flex-row gap-4 w-full md:w-auto"
@@ -12,11 +12,11 @@ const SearchResult = ({ course }) => {
         <img
           src={course.courseThumbnail}
           alt="course-thumbnail"
-          className="h-32 w-full md:w-56 object-cover rounded"
+          className="h-40 w-full md:w-56 object-cover rounded"
         />
         <div className="flex flex-col gap-2">
-          <h1 className="font-bold text-lg md:text-xl">{course.courseTitle}</h1>
-          <p className="text-sm text-gray-600">{course.subTitle}</p>
+          <h1 className="font-bold text-lg md:text-xl line-clamp-2">{course.courseTitle}</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{course.subTitle}</p>
           <p className="text-sm text-gray-700">
             Instructor:<span className="font-bold">{course.creator?.name}</span>
           </p>

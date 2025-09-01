@@ -129,7 +129,7 @@ const LectureTab = () => {
 
   return (
     <Card className="shadow-md border rounded-2xl">
-      <CardHeader className="flex justify-between items-start">
+      <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
         <div>
           <CardTitle className="text-xl font-semibold">Edit Lecture</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
@@ -176,7 +176,7 @@ const LectureTab = () => {
             type="file"
             accept="video/*"
             onChange={fileChangeHandler}
-            className="w-fit"
+            className="w-full sm:w-fit"
           />
         </div>
 
@@ -193,11 +193,11 @@ const LectureTab = () => {
           </div>
         )}
 
-        <div className="flex justify-end space-x-3 pt-4 border-t">
+        <div className="flex flex-wrap justify-end gap-2 pt-4 border-t">
           <Link to={`/admin/course/${courseId}/lecture`}>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
           </Link>
-          <Button disabled={isLoading} onClick={editLectureHandler}>
+          <Button disabled={isLoading} onClick={editLectureHandler} className="w-full sm:w-auto">
             {isLoading ? (
               <>
                 <DotLottieReact

@@ -76,7 +76,7 @@ const CourseProgress = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 mt-20">
+  <div className="max-w-7xl mx-auto p-4 mt-20">
       {/* course name */}
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold">{courseTitle}</h1>
@@ -94,14 +94,14 @@ const CourseProgress = () => {
           )}
         </Button>
       </div>
-      <div className="flex flex-col md:flex-row gap-6">
+  <div className="flex flex-col md:flex-row gap-6">
         {/* video */}
-        <div className="flex-1 md:h-3/5 h-fit rounded-lg shadow-lg p-4">
+    <div className="flex-1 md:h-3/5 h-fit rounded-lg shadow-lg p-4 bg-white dark:bg-gray-900">
           <div>
             <video
               src={currentLecture?.videoUrl || initialLecture.videoUrl}
               controls
-              className="w-full h-auto md:rounded-lg"
+      className="w-full h-auto md:rounded-lg"
               onPlay={() =>
                 handleLectureProgress(currentLecture?._id || initialLecture._id)
               }
@@ -121,7 +121,7 @@ const CourseProgress = () => {
           </div>
         </div>
         {/* Lecture Sidebar */}
-        <div className="flex flex-col w-full md:w-2/5 border-t md:border-t-0 md:border-l border-gray-200 md:pl-4 pt-4 md:pt-0">
+        <div className="flex flex-col w-full md:w-2/5 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 md:pl-4 pt-4 md:pt-0">
           <h2 className="font-semibold text-xl mb-4">Lecture</h2>
           <div className="flex-1 overflow-y-auto">
             {courseDetails?.lectures.map((lecture) => (
@@ -129,8 +129,8 @@ const CourseProgress = () => {
                 key={lecture._id}
                 className={`mb-3 hover:cursor-pointer transition transform ${
                   lecture._id === currentLecture?._id
-                    ? "bg-gray-200"
-                    : "dark:bg-gray-800"
+                    ? "bg-gray-100 dark:bg-gray-800"
+                    : "bg-white dark:bg-gray-900"
                 }`}
                 onClick={() => handleSelectLecture(lecture)}
               >

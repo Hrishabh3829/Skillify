@@ -57,7 +57,7 @@ const NavBar = () => {
           <School size={30} />
           <Link to="/">
             <h1 className="hidden md:block font-extrabold text-2xl">
-              E-Learning
+              Skillify
             </h1>
           </Link>
         </div>
@@ -115,7 +115,7 @@ const NavBar = () => {
       </div>
       {/* Mobile device */}
       <div className="flex md:hidden items-center justify-between px-4 h-full">
-        <h1 className="font-extrabold text-2xl">E-Learning</h1>
+        <Link to="/" className="font-extrabold text-2xl">Skillify</Link>
 
         <MobileNavbar user={user} />
       </div>
@@ -153,7 +153,7 @@ const MobileNavbar = ({ user }) => {
             <SheetTitle className="font-stretch-50% text-2xl">
               <SheetClose asChild>
                 <Link to={"/"}>
-                  <Button>E-Learning</Button>
+                  <Button>Skillify</Button>
                 </Link>
               </SheetClose>
             </SheetTitle>
