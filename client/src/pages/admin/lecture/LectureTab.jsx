@@ -18,7 +18,7 @@ import {
   useGetLectureByIdQuery,
   useRemoveLectureMutation,
 } from "@/features/api/courseApi";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
@@ -33,6 +33,7 @@ const LectureTab = () => {
   const [btnDisable, setBtnDisable] = useState(true);
   const params = useParams();
   const { courseId, lectureId } = params;
+  const navigate = useNavigate();
 
   const { data: lectureData, refetch } = useGetLectureByIdQuery(lectureId);
   const lecture = lectureData?.lecture;
@@ -91,6 +92,11 @@ const LectureTab = () => {
   };
 
   const editLectureHandler = async () => {
+    if (!uploadVideoInfo || !uploadVideoInfo.videoUrl) {
+      toast.error("Please upload a video before updating the lecture.");
+      return;
+    }
+
     await editLecture({
       lectureTitle,
       videoInfo: uploadVideoInfo,
@@ -117,8 +123,9 @@ const LectureTab = () => {
   useEffect(() => {
     if (removeSuccess) {
       toast.success(removeData.message);
+      navigate(`/admin/course/${courseId}/lecture`);
     }
-  }, [removeSuccess]);
+  }, [removeSuccess, removeData, courseId, navigate]);
 
   return (
     <Card className="shadow-md border rounded-2xl">
@@ -187,7 +194,9 @@ const LectureTab = () => {
         )}
 
         <div className="flex justify-end space-x-3 pt-4 border-t">
-          <Button variant="outline">Cancel</Button>
+          <Link to={`/admin/course/${courseId}/lecture`}>
+            <Button variant="outline">Cancel</Button>
+          </Link>
           <Button disabled={isLoading} onClick={editLectureHandler}>
             {isLoading ? (
               <>
