@@ -56,7 +56,7 @@ const CourseDetail = () => {
   };
 
   return (
-    <div className="mt-20">
+    <div className="mt-6">
       {/* Header Section */}
   <header className="bg-[#212224] text-white dark:bg-[#0e0f10]">
         <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2">

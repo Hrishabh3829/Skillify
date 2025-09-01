@@ -7,8 +7,8 @@ const SideBar = () => {
   return (
     <div className="flex">
       {/* Desktop Sidebar */}
-  <div className="hidden lg:block w-[250px] xl:w-[300px] space-y-8 border-r border-gray-300 dark:border-gray-700 bg-[#f0f0f0] dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-5 sticky top-16 h-[calc(100vh-4rem)]">
-        <div className="mt-20 space-y-4">
+  <div className="hidden lg:block w-[250px] xl:w-[300px] space-y-6 border-r border-gray-300 dark:border-gray-700 bg-[#f0f0f0] dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sticky top-16 h-[calc(100vh-4rem)]">
+  <div className="mt-3 space-y-3">
           <Link
             to={"dashboard"}
             className="flex items-center gap-2 hover:text-gray-700 dark:hover:text-gray-300"
@@ -26,9 +26,9 @@ const SideBar = () => {
         </div>
       </div>
       {/* Content */}
-      <div className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
+      <div className="flex-1 p-3 sm:p-4 md:p-5 lg:p-6 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
         {/* Simple mobile links (no drawer) */}
-        <div className="lg:hidden mb-4 flex gap-2">
+        <div className="lg:hidden mb-3 flex gap-2">
           <Link to={"dashboard"}>
             <Button size="sm" variant="outline">Dashboard</Button>
           </Link>

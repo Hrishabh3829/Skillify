@@ -25,7 +25,7 @@ import { toast } from "sonner";
 const CourseSkeleton = () => <Skeleton className="h-40 w-full rounded-lg" />;
 
 const ProfileSkeleton = () => (
-  <div className="max-w-4xl mx-auto px-4 my-24">
+  <div className="max-w-4xl mx-auto px-4 my-10">
     <Skeleton className="h-7 w-40 mx-auto md:mx-0" />
     <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
       <div className="flex flex-col items-center">
@@ -102,7 +102,7 @@ export const Profile = () => {
   const enrolledCourses = user?.enrolledCourses || [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 my-24">
+  <div className="max-w-4xl mx-auto px-4 my-10">
       <h1 className="font-bold text-2xl text-center md:text-left">PROFILE</h1>
 
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">

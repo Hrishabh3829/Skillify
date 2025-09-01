@@ -109,7 +109,7 @@ const Login = () => {
   
 
   return (
-    <div className="flex items-center w-full justify-center mt-20">
+  <div className="flex items-center w-full justify-center mt-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Tabs defaultValue="login">
           <TabsList>
