@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DarkMode } from "@/DarkMode";
-import { EditIcon, LogOut, Menu, School } from "lucide-react";
+import { EditIcon, LogOut, Menu } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -53,14 +53,14 @@ const NavBar = () => {
     <div className="h-16 dark:bg-[#0A0A0A] bg-white border-b dark:border-b-gray-800 border-b-gray-200 fixed top-0 left-0 right-0 duration-300 z-10">
       {/* Desktop */}
       <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full px-4">
-        <div className="flex items-center gap-2">
-          <School size={30} />
-          <Link to="/">
-            <h1 className="hidden md:block font-extrabold text-2xl">
-              Skillify
-            </h1>
-          </Link>
-        </div>
+        <Link to="/" className="flex items-center gap-0">
+          <img
+            src="/skillify.png"
+            alt="Skillify logo"
+      className="h-16 w-16 object-contain"
+          />
+          <h1 className="hidden md:block font-extrabold text-2xl -ml-2 leading-none">Skillify</h1>
+        </Link>
         <div className="flex items-center gap-8">
           {user ? (
             <>
@@ -115,7 +115,14 @@ const NavBar = () => {
       </div>
       {/* Mobile device */}
       <div className="flex md:hidden items-center justify-between px-4 h-full">
-        <Link to="/" className="font-extrabold text-2xl">Skillify</Link>
+        <Link to="/" className="flex items-center gap-0">
+          <img
+            src="/skillify.png"
+            alt="Skillify logo"
+            className="h-16 w-16 object-contain"
+          />
+          <span className="font-extrabold text-2xl -ml-2 leading-none">Skillify</span>
+        </Link>
 
         <MobileNavbar user={user} />
       </div>
@@ -149,15 +156,19 @@ const MobileNavbar = ({ user }) => {
       </SheetTrigger>
       <SheetContent className="flex flex-col">
         <SheetHeader className="flex flex-row items-center justify-between mt-2">
-          <div className=" flex mt-2 gap-8">
-            <SheetTitle className="font-stretch-50% text-2xl">
+          <div className="flex mt-2 gap-8 items-center">
+      <SheetTitle className="text-2xl">
               <SheetClose asChild>
-                <Link to={"/"}>
-                  <Button>Skillify</Button>
+                <Link to={"/"} className="flex items-center gap-0">
+                  <img
+                    src="/skillify.png"
+                    alt="Skillify logo"
+                    className="h-16 w-16 object-contain"
+                  />
+                  <span className="font-bold -ml-2 leading-none">Skillify</span>
                 </Link>
               </SheetClose>
             </SheetTitle>
-
             <DarkMode />
           </div>
         </SheetHeader>

@@ -182,7 +182,7 @@ const CourseTab = () => {
   if (courseByIdLoading) return <Loader2 className="h-4 w-4 animate-spin" />;
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <CardTitle>Course Overview</CardTitle>
@@ -209,8 +209,8 @@ const CourseTab = () => {
         </div>
       </CardHeader>
 
-      <CardContent className="overflow-x-hidden">
-        <div className="space-y-4 mt-5">
+      <CardContent className="overflow-x-hidden p-4 sm:p-6">
+        <div className="space-y-4 mt-2">
           <div>
             <Label className="my-1">Course Title</Label>
             <Input
@@ -233,18 +233,18 @@ const CourseTab = () => {
             />
           </div>
 
-          <div>
+      <div>
             <Label className="my-1">Course Description</Label>
             <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-800">
               <RichTextEditor input={input} setInput={setInput} />
             </div>
           </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div>
               <Label className="my-1">Category</Label>
               <Select value={input.category} onValueChange={selectCategory}>
-                <SelectTrigger className="w-full md:w-[180px]">
+        <SelectTrigger className="w-full lg:w-[180px]">
                   <SelectValue placeholder="Choose a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -272,13 +272,13 @@ const CourseTab = () => {
               </Select>
             </div>
 
-            <div>
+      <div>
               <Label className="my-1">Course Level</Label>
               <Select
                 value={input.courseLevel}
                 onValueChange={selectCourseLevel}
               >
-                <SelectTrigger className="w-full md:w-[180px]">
+        <SelectTrigger className="w-full lg:w-[180px]">
                   <SelectValue placeholder="Select difficulty level" />
                 </SelectTrigger>
                 <SelectContent>
@@ -294,7 +294,7 @@ const CourseTab = () => {
 
             <div>
               <Label className="my-1">Price (INR)</Label>
-              <Input
+      <Input
                 type="number"
                 name="coursePrice"
                 value={input.coursePrice}
@@ -302,7 +302,7 @@ const CourseTab = () => {
                 placeholder="Enter course price, e.g., 199"
                 min={100}
                 step={100}
-        className="w-full md:w-fit"
+    className="w-full md:w-fit"
               />
             </div>
           </div>
