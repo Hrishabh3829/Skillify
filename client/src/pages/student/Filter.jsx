@@ -10,24 +10,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useGetPublishedCourseQuery } from "@/features/api/courseApi";
 
 const categories = [
   { id: "Next.js", label: "Next.js" },
-  { id: "Frontend", label: "Frontend" },
-  { id: "Full Stack", label: "Full Stack" },
-  { id: "MERN Stack", label: "MERN Stack" },
-  { id: "Backend", label: "Backend" },
   { id: "JavaScript", label: "JavaScript" },
   { id: "Python", label: "Python" },
-  { id: "Docker", label: "Docker" },
   { id: "MongoDB", label: "MongoDB" },
   { id: "HTML", label: "HTML" },
-  { id: "Azure ", label: "Azure" },
 ];
 const Filter = ({ handleFilterChange }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortByPrice, setSortByPrice] = useState("");
+  const { data: publishedData } = useGetPublishedCourseQuery();
+
+  // Build dynamic categories from first word of each published course title
+  const dynamicCategories = useMemo(() => {
+    const set = new Set();
+    const courses = publishedData?.courses || publishedData?.data || [];
+    for (const c of courses) {
+      const title = c?.courseTitle || c?.title || "";
+      if (!title) continue;
+      const first = title.trim().split(/\s+/)[0];
+      if (first) set.add(first);
+    }
+    // Map to objects with id/label
+    return Array.from(set)
+      .sort((a, b) => a.localeCompare(b))
+      .map((w) => ({ id: w, label: w }));
+  }, [publishedData]);
+
+  const mergedCategories = useMemo(() => {
+    const base = [...categories];
+    const existing = new Set(base.map((c) => c.id));
+    for (const d of dynamicCategories) {
+      if (!existing.has(d.id)) base.push(d);
+    }
+    return base;
+  }, [dynamicCategories]);
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategories((prevCategories) => {
@@ -65,7 +86,7 @@ const Filter = ({ handleFilterChange }) => {
       <Separator className={"my-4"} />
       <div>
         <h1 className="font-semibold mb-2">Categories</h1>
-        {categories.map((category) => (
+        {mergedCategories.map((category) => (
           <div key={category.id} className="flex items-center space-x-2 my-2">
             <Checkbox
               id={category.id}
@@ -73,7 +94,7 @@ const Filter = ({ handleFilterChange }) => {
               onCheckedChange={() => handleCategoryChange(category.id)}
             />
             <Label
-            htmlFor={category.id}
+              htmlFor={category.id}
               className={
                 "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               }
