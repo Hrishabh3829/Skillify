@@ -14,6 +14,8 @@ import DOMPurify from "dompurify";
 import BuyCourseButton from "../BuyCourseButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // Using native <video> for robust Cloudinary playback
 
 const CourseDetail = () => {
@@ -58,38 +60,74 @@ const CourseDetail = () => {
   return (
     <div className="mt-6">
       {/* Header Section */}
-  <header className="bg-[#212224] text-white dark:bg-[#0e0f10]">
-        <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2">
-          <h1 className="font-bold text-2xl md:text-3xl">
-            {course?.courseTitle}
-          </h1>
-          <p className="text-base md:text-lg">{course?.subTitle}</p>
+      <header className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+        <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-3">
+          {isLoading ? (
+            <>
+              <Skeleton className="h-7 w-2/3 max-w-xl bg-white/20" />
+              <Skeleton className="h-5 w-1/2 max-w-md bg-white/10" />
+              <div className="flex items-center gap-3 mt-2">
+                <Skeleton className="h-9 w-24 bg-white/10" />
+                <Skeleton className="h-9 w-24 bg-white/10" />
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="font-bold text-2xl md:text-3xl">
+                {course?.courseTitle}
+              </h1>
+              {course?.subTitle && (
+                <p className="text-base md:text-lg opacity-90">
+                  {course?.subTitle}
+                </p>
+              )}
+              <div className="flex flex-wrap items-center gap-3 text-sm mt-1">
+                {course?.courseLevel && (
+                  <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 border border-blue-300 dark:border-blue-700">
+                    {course.courseLevel}
+                  </Badge>
+                )}
+                <div className="flex items-center gap-2 opacity-90">
+                  <BadgeInfo size={16} />
+                  <span className="text-gray-800 dark:text-gray-200">
+                    Last updated: {course?.createdAt?.split("T")[0]}
+                  </span>
+                </div>
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border border-green-300 dark:border-green-700"
+                >
+                  {course?.enrolledStudents?.length || 0} enrolled
+                </Badge>
+              </div>
 
-          <div className="flex flex-col gap-1 text-sm mt-2">
-            <p>
-              By{" "}
-              <span className="text-[#C0C4FC] underline italic">
-                {course?.creator.name}
-              </span>
-            </p>
-            <div className="flex items-center gap-2">
-              <BadgeInfo size={16} />
-              <span>Last updated: {course?.createdAt.split("T")[0]}</span>
-            </div>
-            <p>Enrolled Students: {course?.enrolledStudents.length}</p>
-          </div>
+              <div className="flex items-center gap-3 mt-1">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={course?.creator?.photoUrl} />
+                  <AvatarFallback>
+                    {course?.creator?.name?.charAt(0) || ":)"}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="italic underline text-blue-600 dark:text-blue-300">
+                  {course?.creator?.name}
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </header>
 
       {/* Main Section */}
-  <main className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex flex-col lg:flex-row justify-between gap-10">
+      <main className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex flex-col lg:flex-row justify-between gap-10">
         {/* Left Side */}
         <section className="w-full lg:w-2/3 space-y-5">
           <h2 className="font-bold text-xl md:text-2xl">Description</h2>
           <div
             className="prose prose-sm md:prose-base text-gray-800 dark:text-gray-200 max-w-none prose-headings:mb-2 prose-p:leading-relaxed prose-li:marker:text-gray-500 dark:prose-invert"
             // Sanitize HTML to avoid XSS since we render instructor-provided content
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(course?.description || "") }}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(course?.description || ""),
+            }}
           />
 
           <Card>
