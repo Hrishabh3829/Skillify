@@ -75,6 +75,7 @@ export const AddCourse = () => {
                   DSA & Programming
                 </SelectItem>
                 <SelectItem value="System Design">System Design</SelectItem>
+                <SelectItem value="Dev Ops">DevOps</SelectItem>
                 <SelectItem value="Cybersecurity">Cybersecurity</SelectItem>
                 <SelectItem value="Mobile Development">
                   Mobile Development

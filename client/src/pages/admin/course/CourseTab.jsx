@@ -264,6 +264,7 @@ const CourseTab = () => {
                     </SelectItem>
                     <SelectItem value="System Design">System Design</SelectItem>
                     <SelectItem value="Cybersecurity">Cybersecurity</SelectItem>
+                    <SelectItem value="DevOps">DevOps</SelectItem>
                     <SelectItem value="Mobile Development">
                       Mobile Development
                     </SelectItem>
