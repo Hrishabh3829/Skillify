@@ -34,7 +34,7 @@ createRoot(document.getElementById("root")).render(
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <Custom>
           <App />
-          <Toaster position="top-right" duration={2200} richColors closeButton={false} />
+          <Toaster position="top-right" duration={2200}  closeButton={false} />
         </Custom>
       </ThemeProvider>
     </Provider>
