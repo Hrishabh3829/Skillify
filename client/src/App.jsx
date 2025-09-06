@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Link } from "react-router-dom";
 import Login from "./pages/Login";
 import { HeroSection } from "./pages/student/HeroSection";
 import { MainLayout } from "./layout/MainLayout";
@@ -23,11 +23,19 @@ import {
   ProtectedRoute,
 } from "./pages/ProtectedRoute";
 import PurchaseCourseProtectedRoute from "./pages/PurchaseCourseProtectedRoute";
+import OAuthSuccess from "./pages/OAuthSuccess";
 
 const appRouter = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
+    errorElement: (
+      <div className="p-10 text-center space-y-4">
+        <h1 className="text-2xl font-semibold">Something went wrong</h1>
+        <p className="text-muted-foreground">An unexpected error occurred.</p>
+        <Link to="/" className="text-primary underline">Go Home</Link>
+      </div>
+    ),
     children: [
       {
         path: "/",
@@ -37,6 +45,10 @@ const appRouter = createBrowserRouter([
             <Courses />
           </>
         ),
+      },
+      {
+        path: "oauth-success",
+        element: <OAuthSuccess />
       },
       {
         path: "login",
@@ -88,7 +100,7 @@ const appRouter = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      //admin
+  //admin
       {
         path: "admin",
         element: (
@@ -123,6 +135,16 @@ const appRouter = createBrowserRouter([
             element: <EditLecture />
           },
         ],
+      },
+      {
+        path: "*",
+        element: (
+          <div className="p-10 text-center space-y-3">
+            <h2 className="text-3xl font-bold">404</h2>
+            <p className="text-muted-foreground">Page not found.</p>
+            <Link to="/" className="text-primary underline">Return home</Link>
+          </div>
+        ),
       },
     ],
   },

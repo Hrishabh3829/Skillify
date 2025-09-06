@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +18,7 @@ import {
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
   const [signUpInput, setSignUpInput] = useState({
@@ -30,6 +31,8 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const toastShownRef = useRef(false);
 
   const [
     registerUser,
@@ -82,29 +85,60 @@ const Login = () => {
   };
 
   useEffect(() => {
+    if (toastShownRef.current) return;
     if (registerIsSuccess && registerData) {
-      toast.success(registerData.message || "Signup Successfull.");
+      toastShownRef.current = true;
+      toast.success(registerData.message || "Signup success");
       navigate("/");
+      return;
     }
-    
     if (registerError) {
-      toast.error(registerError?.data?.message || "Signup Failed");
-    }
-
-    if (loginIsSuccess && loginData) {
-      toast.success(loginData.message || "Login Successfull.");
-      const role = loginData?.user?.role;
-      if (role === "instructor") {
-        navigate("/admin/dashboard");
+      toastShownRef.current = true;
+      if (registerError?.data?.oauthOnly) {
+        toast.error(registerError.data.message);
       } else {
-        navigate("/");
+        toast.error(registerError?.data?.message || "Signup Failed");
+      }
+      return;
+    }
+    if (loginIsSuccess && loginData) {
+      toastShownRef.current = true;
+      toast.success(loginData.message || "Login success");
+      const role = loginData?.user?.role;
+      navigate(role === "instructor" ? "/admin/dashboard" : "/");
+      return;
+    }
+    if (loginError) {
+      toastShownRef.current = true;
+      if (loginError?.data?.oauthOnly) {
+        toast.error(loginError.data.message);
+      } else {
+        toast.error(loginError?.data?.message || "Login Failed");
       }
     }
+  }, [registerIsSuccess, registerData, registerError, loginIsSuccess, loginData, loginError, navigate]);
 
-    if (loginError) {
-      toast.error(loginError?.data?.message || "Login Failed");
+  const handleGoogleSignIn = async () => {
+    try {
+      setGoogleLoading(true);
+      const res = await fetch("http://localhost:5000/api/v1/user/google/auth-url", { credentials: "include" });
+      const data = await res.json();
+      if (data?.alreadyLoggedIn) {
+        toast.info(data.message || "Already logged in");
+        navigate("/");
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data?.message || "Failed to start Google login");
+      }
+    } catch (e) {
+      toast.error("Google auth error");
+    } finally {
+      setTimeout(() => setGoogleLoading(false), 600);
     }
-  }, [registerIsLoading, loginData, registerData, loginError, registerError]);
+  };
 
   
 
@@ -176,6 +210,11 @@ const Login = () => {
                   )}
                 </Button>
               </CardFooter>
+              <div className="px-6 pb-6 -mt-2">
+                <Button variant="outline" className="w-full gap-2" type="button" disabled={googleLoading} onClick={handleGoogleSignIn}>
+                  <FcGoogle className="text-xl" /> {googleLoading ? "Redirecting..." : "Sign up with Google"}
+                </Button>
+              </div>
             </Card>
           </TabsContent>
 
@@ -228,6 +267,11 @@ const Login = () => {
                   )}
                 </Button>
               </CardFooter>
+              <div className="px-6 pb-6 -mt-2">
+                <Button variant="outline" className="w-full gap-2" type="button" disabled={googleLoading} onClick={handleGoogleSignIn}>
+                  <FcGoogle className="text-xl" /> {googleLoading ? "Redirecting..." : "Sign in with Google"}
+                </Button>
+              </div>
             </Card>
           </TabsContent>
         </Tabs>
