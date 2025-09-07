@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import axios from "axios";
+import { API_BASE } from "@/config/api";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -22,7 +23,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-const MEDIA_API = "http://localhost:5000/api/v1/media";
+const MEDIA_API = `${API_BASE}/api/v1/media`;
 
 const LectureTab = () => {
   const [lectureTitle, setLectureTitle] = useState("");

@@ -19,6 +19,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { API_BASE } from "@/config/api";
 
 const Login = () => {
   const [signUpInput, setSignUpInput] = useState({
@@ -121,7 +122,7 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       setGoogleLoading(true);
-      const res = await fetch("http://localhost:5000/api/v1/user/google/auth-url", { credentials: "include" });
+  const res = await fetch(`${API_BASE}/api/v1/user/google/auth-url`, { credentials: "include" });
       const data = await res.json();
       if (data?.alreadyLoggedIn) {
         toast.info(data.message || "Already logged in");
