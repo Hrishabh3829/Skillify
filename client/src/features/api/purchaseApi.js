@@ -8,6 +8,9 @@ export const purchaseApi = createApi({
     baseUrl: COURSE_PURCHASE_API,
     credentials: "include",
   }),
+  tagTypes: ["Purchases"],
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
     createCheckoutSession: builder.mutation({
       query: (courseId) => ({
@@ -15,6 +18,7 @@ export const purchaseApi = createApi({
         method: "POST",
         body: { courseId },
       }),
+      invalidatesTags: ["Purchases"],
     }),
     getCourseDetailWithStatus: builder.query({
       query: (courseId) => ({
@@ -27,6 +31,7 @@ export const purchaseApi = createApi({
         url: `/`,
         method: "GET",
       }),
+      providesTags: ["Purchases"],
     }),
   }),
 });

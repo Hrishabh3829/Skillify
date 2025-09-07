@@ -21,7 +21,9 @@ import {
   useEditCourseMutation,
   useGetCourseByIdQuery,
   usePublishCourseMutation,
+  useDeleteCourseMutation,
 } from "@/features/api/courseApi";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import RichTextEditor from "@/pages/RichTextEditor";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Loader2 } from "lucide-react";
@@ -56,6 +58,7 @@ const CourseTab = () => {
   const [editCourse, { data, isLoading, isSuccess, error }] =
     useEditCourseMutation();
   const [publishCourse] = usePublishCourseMutation();
+  const [deleteCourse, { isLoading: deleting }] = useDeleteCourseMutation();
 
   // Fetch course data and populate state
   useEffect(() => {
@@ -191,7 +194,7 @@ const CourseTab = () => {
             <strong>Save</strong> once all changes are finalized.
           </CardDescription>
         </div>
-        <div className="space-x-2 flex flex-wrap">
+  <div className="space-x-2 flex flex-wrap">
           <Button
             disabled={courseByIdData?.course.lectures.length === 0}
             variant="outline"
@@ -205,7 +208,44 @@ const CourseTab = () => {
               ? "Unpublish Course"
               : "Publish Course"}
           </Button>
-          <Button variant="destructive">Delete Course</Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="destructive">Delete Course</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-sm sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-left">Delete this course?</DialogTitle>
+                <DialogDescription className="text-left">
+                  This action cannot be undone. The course and all its lectures will be permanently removed.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="flex flex-row justify-end gap-2">
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">Cancel</Button>
+                </DialogClose>
+                <Button
+                  variant="destructive"
+                  type="button"
+                  disabled={deleting}
+                  onClick={async () => {
+                    try {
+                      const res = await deleteCourse(courseId).unwrap();
+                      toast.success(res.message || "Course deleted");
+                      navigate("/admin/course");
+                    } catch (e) {
+                      toast.error(e?.data?.message || "Failed to delete course");
+                    }
+                  }}
+                >
+                  {deleting ? (
+                    <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Deleting...</span>
+                  ) : (
+                    "Delete"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardHeader>
 

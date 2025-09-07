@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { useLoggedOut, userLoggedIn } from "../authSlice";
 
+// Centralized user API base (dev tunnel) - adjust as needed
 const USER_API = "http://localhost:5000/api/v1/user/";
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -8,6 +9,9 @@ export const authApi = createApi({
     baseUrl: USER_API,
     credentials: "include",
   }),
+  tagTypes: ["Profile"],
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (inputData) => ({
@@ -15,6 +19,7 @@ export const authApi = createApi({
         method: "POST",
         body: inputData,
       }),
+      invalidatesTags: ["Profile"],
     }),
     loginUser: builder.mutation({
       query: (inputData) => ({
@@ -30,12 +35,20 @@ export const authApi = createApi({
           console.log(error);
         }
       },
+      invalidatesTags: ["Profile"],
     }),
+    // Single loadUser endpoint (removed duplicate)
     loadUser: builder.query({
-      query: () => ({
-        url: "profile",
-        method: "GET",
-      }),
+      query: () => ({ url: "profile", method: "GET" }),
+      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+        try {
+          const result = await queryFulfilled;
+          if (result?.data?.user) {
+            dispatch(userLoggedIn({ user: result.data.user }));
+          }
+        } catch (_) {}
+      },
+      providesTags: ["Profile"],
     }),
     logoutUser: builder.mutation({
       query: () => ({
@@ -49,20 +62,7 @@ export const authApi = createApi({
           console.log(error);
         }
       },
-    }),
-    loadUser: builder.query({
-      query: () => ({
-        url: "profile",
-        method: "GET",
-      }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        try {
-          const result = await queryFulfilled;
-          dispatch(userLoggedIn({ user: result.data.user }));
-        } catch (error) {
-          console.log(error);
-        }
-      },
+      invalidatesTags: ["Profile"],
     }),
     updateUser: builder.mutation({
       query: (formData) => ({
@@ -81,6 +81,7 @@ export const authApi = createApi({
           // noop
         }
       },
+      invalidatesTags: ["Profile"],
     }),
   }),
 });

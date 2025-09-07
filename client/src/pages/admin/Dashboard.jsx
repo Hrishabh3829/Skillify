@@ -24,14 +24,16 @@ export const Dashboard = () => {
   }
 
   const { purchasedCourse = [] } = data || {};
-  const courseData = purchasedCourse.map((course) => ({
-    name: course.courseId.courseTitle,
-    price: course.courseId.coursePrice,
+  // Filter out records where the related course was deleted (courseId null)
+  const validPurchases = purchasedCourse.filter(p => p?.courseId);
+  const courseData = validPurchases.map((p) => ({
+    name: p.courseId.courseTitle ?? "Deleted Course",
+    price: p.courseId.coursePrice ?? 0,
   }));
 
-  const totalSales = purchasedCourse.length;
-  const totalRevenue = purchasedCourse.reduce(
-    (acc, c) => acc + c.courseId.coursePrice,
+  const totalSales = validPurchases.length;
+  const totalRevenue = validPurchases.reduce(
+    (acc, c) => acc + (c?.courseId?.coursePrice || 0),
     0
   );
 
