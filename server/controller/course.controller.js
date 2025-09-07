@@ -1,5 +1,34 @@
 import { Course } from "../models/course.model.js";
 import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
+// Delete a course (and optionally its thumbnail) - only creator can delete
+export const deleteCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const userId = req.id;
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+    if (String(course.creator) !== String(userId)) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this course" });
+    }
+    // Remove thumbnail from Cloudinary if present
+    if (course.courseThumbnail) {
+      try {
+        const publicId = course.courseThumbnail.split("/").pop().split(".")[0];
+        await deleteMediaFromCloudinary(publicId);
+      } catch (e) {
+        // Non-fatal; log and continue
+        console.warn("Thumbnail delete failed", e?.message);
+      }
+    }
+    await Course.findByIdAndDelete(courseId);
+    return res.status(200).json({ success: true, message: "Course deleted successfully" });
+  } catch (error) {
+    console.error("deleteCourse error:", error);
+    return res.status(500).json({ success: false, message: "Failed to delete course" });
+  }
+};
 export const createCourse = async (req, res) => {
   try {
     const { courseTitle, category } = req.body;

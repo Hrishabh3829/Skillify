@@ -156,20 +156,19 @@ export const getCourseDataWithPurchaseStatus = async (req, res) => {
   }
 };
 
-export const getAllPurchasedCourse = async (_, res) => {
+export const getAllPurchasedCourse = async (req, res) => {
   try {
-    const purchasedCourse = await CoursePurchase.find({
-      status: "completed",
-    }).populate("courseId");
-    if (!purchasedCourse) {
-      return res.status(404).json({
-        purchasedCourse: [],
-      });
-    }
-    return res.status(200).json({
-      purchasedCourse,
-    });
+    const creatorId = req.id; // the logged in instructor
+    // Find purchases whose course belongs to this creator
+    const purchasedCourse = await CoursePurchase.find({ status: "completed" })
+      .populate({ path: "courseId", match: { creator: creatorId } });
+
+    // Filter out purchases where populate did not match (courseId null)
+    const scoped = purchasedCourse.filter(p => p.courseId);
+
+    return res.status(200).json({ purchasedCourse: scoped });
   } catch (error) {
     console.log("getAllPurchaseError: ", error);
+    return res.status(500).json({ purchasedCourse: [], message: "Failed to load purchases" });
   }
 };
