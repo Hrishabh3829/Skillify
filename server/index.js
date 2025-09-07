@@ -43,8 +43,7 @@ app.use(
   })
 );
 
-// Optional: handle OPTIONS preflight quickly
-app.options("*", cors());
+// Express 5 with path-to-regexp v6 can error on a bare "*" route; CORS middleware already handles preflight.
 
 //api's
 app.use("/api/v1/media", mediaRoute);
