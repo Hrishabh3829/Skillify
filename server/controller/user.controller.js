@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { deleteMediaFromCloudinary, uploadMedia } from "../utils/cloudinary.js";
 import crypto from "crypto";
-import fetch from "node-fetch";
+// Using global fetch (Node 18+). Removed dependency on 'node-fetch' for deployment compatibility.
 
 const SIGNING_SECRET = process.env.SECRET_KEY;
 if (!SIGNING_SECRET) {
