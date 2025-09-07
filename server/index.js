@@ -15,16 +15,36 @@ const app = express();
 
 const Port = process.env.PORT;
 
-//middlewares
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// CORS configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL, // optional explicit env var
+  "http://localhost:5173",
+  "https://skillify-green.vercel.app", // production domain (no trailing slash)
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow non-browser (no origin) or permitted origins
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Disposition"],
   })
 );
+
+// Optional: handle OPTIONS preflight quickly
+app.options("*", cors());
 
 //api's
 app.use("/api/v1/media", mediaRoute);
