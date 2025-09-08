@@ -1,7 +1,8 @@
 // Central API base resolution for both local dev and production
 // Set VITE_API_BASE_URL in Vercel env to your backend URL (e.g. https://skillify-api.yourdomain.com)
 // Fallback: localhost during dev, placeholder for production until backend deployed.
-const FALLBACK_PROD = 'https://your-backend-domain.com'; // TODO: replace after backend deploy
+// Deployed backend (Render) used as fallback when env var not provided and not on localhost
+const FALLBACK_PROD = 'https://skillify-backend-bf3o.onrender.com';
 export const API_BASE = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'http://localhost:5000'
   : FALLBACK_PROD);
