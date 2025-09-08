@@ -23,6 +23,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Collapse any duplicate slashes in request URL to avoid Express 5 404 from //api paths
+app.use((req, _res, next) => {
+  if (req.url.includes('//')) {
+    req.url = req.url.replace(/\/+/g, '/');
+  }
+  next();
+});
+
 // CORS configuration
 // Supports:
 // - FRONTEND_URL (single primary prod domain)

@@ -22,6 +22,7 @@ export const createCheckoutSession = async (req, res) => {
       status: "pending",
     });
     //create stripe checkout session
+    const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -38,8 +39,8 @@ export const createCheckoutSession = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:5173/course-progress/${courseId}`,
-      cancel_url: `http://localhost:5173/course-detail/${courseId}`,
+      success_url: `${frontendBase.replace(/\/+$/, '')}/course-progress/${courseId}`,
+      cancel_url: `${frontendBase.replace(/\/+$/, '')}/course-detail/${courseId}`,
       metadata: {
         courseId: courseId,
         userId: userId,
