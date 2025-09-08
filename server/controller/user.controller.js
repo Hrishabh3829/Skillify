@@ -6,6 +6,12 @@ import crypto from "crypto";
 // Using global fetch (Node 18+). Removed dependency on 'node-fetch' for deployment compatibility.
 
 const SIGNING_SECRET = process.env.SECRET_KEY;
+const isProd = process.env.NODE_ENV === 'production';
+const baseCookieOptions = {
+  httpOnly: true,
+  secure: isProd, // required for SameSite=None
+  sameSite: isProd ? 'none' : 'lax',
+};
 if (!SIGNING_SECRET) {
   console.warn("[WARN] SECRET_KEY not set. JWT signing will fail.");
 }
@@ -52,11 +58,7 @@ export const register = async (req, res) => {
 
     return res
       .status(201)
-      .cookie("token", token, {
-        httpOnly: true,
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      })
+      .cookie("token", token, { ...baseCookieOptions, maxAge: 24 * 60 * 60 * 1000 })
       .json({
         success: true,
         message: `Hello ${name}, your registration was successful!`,
@@ -119,11 +121,7 @@ export const login = async (req, res) => {
 
     return res
       .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      })
+      .cookie("token", token, { ...baseCookieOptions, maxAge: 24 * 60 * 60 * 1000 })
       .json({
         success: true,
         message: `Welcome back, ${user.name} 👋`,
@@ -146,10 +144,7 @@ export const login = async (req, res) => {
 
 export const logout = (_, res) => {
   try {
-    res.cookie("token", "", {
-      httpOnly: true,
-      expires: new Date(0), // Set expiration date to the past
-    });
+  res.cookie("token", "", { ...baseCookieOptions, expires: new Date(0) });
 
     res.status(200).json({
       success: true,
@@ -337,11 +332,7 @@ export const googleOAuthCallback = async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, SIGNING_SECRET, { expiresIn: "1d" });
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+  res.cookie("token", token, { ...baseCookieOptions, maxAge: 24 * 60 * 60 * 1000 });
 
     const redirectBase = process.env.CLIENT_REDIRECT_SUCCESS || process.env.FRONTEND_URL || "http://localhost:5173";
     return res.redirect(`${redirectBase}/oauth-success?success=true`);

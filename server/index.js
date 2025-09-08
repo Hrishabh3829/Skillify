@@ -13,6 +13,9 @@ dotenv.config({});
 
 const app = express();
 
+// Behind Render proxy: needed so secure cookies + protocol detection work
+app.set("trust proxy", 1);
+
 const Port = process.env.PORT;
 
 // Middlewares
@@ -21,19 +24,37 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // CORS configuration
-const allowedOrigins = [
-  process.env.FRONTEND_URL, // optional explicit env var
+// Supports:
+// - FRONTEND_URL (single primary prod domain)
+// - ALLOWED_ORIGINS (comma separated list)
+// - Optional wildcard allowance for Vercel preview deployments when ALLOW_VERCEL_PREVIEWS=true
+const primaryFrontend = process.env.FRONTEND_URL;
+const additional = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map(o => o.trim())
+  .filter(Boolean);
+
+const baseAllowed = [
+  primaryFrontend,
+  ...additional,
   "http://localhost:5173",
-  "https://skillify-green.vercel.app", // production domain (no trailing slash)
+  "http://127.0.0.1:5173",
 ].filter(Boolean);
+
+const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS === "true";
+// Build regex list for dynamic origins (extend if you have other preview hosts)
+const dynamicOriginTests = [];
+if (allowVercelPreviews) {
+  // e.g. https://skillify-<hash>-<project>.vercel.app
+  dynamicOriginTests.push(/^https:\/\/.*vercel\.app$/i);
+}
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow non-browser (no origin) or permitted origins
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      if (!origin) return callback(null, true); // server-to-server or curl
+      if (baseAllowed.includes(origin)) return callback(null, true);
+      if (dynamicOriginTests.some(r => r.test(origin))) return callback(null, true);
       return callback(new Error(`CORS blocked origin: ${origin}`));
     },
     credentials: true,
