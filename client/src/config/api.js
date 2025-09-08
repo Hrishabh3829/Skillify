@@ -3,8 +3,13 @@
 // Fallback: localhost during dev, placeholder for production until backend deployed.
 // Deployed backend (Render) used as fallback when env var not provided and not on localhost
 const FALLBACK_PROD = 'https://skillify-backend-bf3o.onrender.com';
-export const API_BASE = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+const rawBase = (import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost'
   ? 'http://localhost:5000'
-  : FALLBACK_PROD);
+  : FALLBACK_PROD) || '').trim();
+// Remove any trailing slashes to prevent double '//' in requests (causes Express 5 404)
+export const API_BASE = rawBase.replace(/\/+$/, '');
 
-export const apiPath = (segment = '') => `${API_BASE}${segment.startsWith('/') ? segment : '/' + segment}`;
+export const apiPath = (segment = '') => {
+  const cleanSegment = segment.startsWith('/') ? segment : '/' + segment;
+  return API_BASE + cleanSegment;
+};
