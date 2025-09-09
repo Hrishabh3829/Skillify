@@ -264,9 +264,12 @@ export const getGoogleAuthUrl = async (req, res) => {
     } catch (_) {}
 
     const state = crypto.randomBytes(16).toString("hex");
+    // Set state cookie as cross-site compatible so it persists in modern browsers
     res.cookie("g_state", state, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
+      path: "/",
       maxAge: 5 * 60 * 1000,
     });
     const root = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -294,8 +297,14 @@ export const googleOAuthCallback = async (req, res) => {
     if (!state || !storedState || state !== storedState) {
       return res.status(400).json({ success: false, message: "Invalid state" });
     }
-    // clear state cookie
-    res.cookie("g_state", "", { httpOnly: true, expires: new Date(0) });
+    // clear state cookie (use same attributes so browsers overwrite correctly)
+    res.cookie("g_state", "", {
+      httpOnly: true,
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
+      path: "/",
+      expires: new Date(0),
+    });
 
     // Exchange code for tokens
     const tokenResp = await fetch("https://oauth2.googleapis.com/token", {
