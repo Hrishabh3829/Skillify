@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skillify-ingress
+  namespace: skillify
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: https://skillify-green.vercel.app/  # replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 5000

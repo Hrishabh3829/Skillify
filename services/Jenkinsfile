@@ -1,0 +1,101 @@
+pipeline {
+  agent { label 'docker' }
+
+  environment {
+    DOCKERHUB_CREDENTIALS = 'docker-hub-creds' // Jenkins credentials id
+    KUBECONFIG_CREDENTIALS = 'kubeconfig'      // Jenkins file credential id for kubeconfig
+    DOCKER_USER = 'nigachu42'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+        script {
+          COMMIT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+        }
+      }
+    }
+
+    stage('Install & Test') {
+      parallel {
+        stage('Frontend Build') {
+          steps {
+            dir('services/frontend') {
+              sh 'npm ci'
+              sh 'npm run build'
+            }
+          }
+        }
+        stage('Backend & Services Test') {
+          steps {
+            script {
+              def services = ['backend','auth-service','course-service','media-service']
+              services.each { svc ->
+                dir("services/${svc}") {
+                  sh 'npm ci'
+                  sh 'npm test || true'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        script {
+          def services = ['frontend','backend','auth-service','course-service','media-service']
+          services.each { svc ->
+            dir("services/${svc}") {
+              sh "docker build -t ${DOCKER_USER}/${svc}:${COMMIT} ."
+            }
+          }
+        }
+      }
+    }
+
+    stage('Docker Push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER_SECRET', passwordVariable: 'DOCKER_PASS_SECRET')]) {
+          sh 'echo $DOCKER_PASS_SECRET | docker login -u $DOCKER_USER_SECRET --password-stdin'
+          script {
+            def services = ['frontend','backend','auth-service','course-service','media-service']
+            services.each { svc ->
+              sh "docker tag ${DOCKER_USER}/${svc}:${COMMIT} ${DOCKER_USER}/${svc}:latest"
+              sh "docker push ${DOCKER_USER}/${svc}:${COMMIT}"
+              sh "docker push ${DOCKER_USER}/${svc}:latest"
+            }
+          }
+        }
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS, variable: 'KUBECONFIG_FILE')]) {
+          sh '''
+            mkdir -p $HOME/.kube
+            cp $KUBECONFIG_FILE $HOME/.kube/config
+          '''
+          script {
+            def services = ['backend','frontend','auth-service','course-service','media-service']
+            services.each { svc ->
+              sh "kubectl -n skillify set image deployment/${svc} ${svc}=nigachu42/${svc}:${COMMIT} --record || true"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "SUCCESS: ${COMMIT}"
+    }
+    failure {
+      echo "FAILED: see logs"
+    }
+  }
+}

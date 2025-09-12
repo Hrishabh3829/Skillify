@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-service
+  namespace: skillify
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: course-service
+  template:
+    metadata:
+      labels:
+        app: course-service
+    spec:
+      containers:
+        - name: course-service
+          image: nigachu42/course-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: course-service
+  namespace: skillify
+spec:
+  selector:
+    app: course-service
+  ports:
+    - port: 4002
+      targetPort: 4002

@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  backend:
+    build: ./services/backend
+    container_name: skillify-backend-dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./services/backend:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: skillify-auth-dev
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  course-service:
+    build: ./services/course-service
+    container_name: skillify-course-dev
+    ports:
+      - "4002:4002"
+    volumes:
+      - ./services/course-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  media-service:
+    build: ./services/media-service
+    container_name: skillify-media-dev
+    ports:
+      - "4003:4003"
+    volumes:
+      - ./services/media-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  frontend:
+    build: ./services/frontend
+    container_name: skillify-frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./services/frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+    environment:
+      - VITE_BACKEND_URL=http://localhost:5000
+    depends_on:
+      - backend
