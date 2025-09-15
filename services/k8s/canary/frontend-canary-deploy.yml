@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-canary
+  namespace: skillify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: frontend
+        track: canary
+    spec:
+      containers:
+        - name: frontend
+          image: nigachu42/frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80

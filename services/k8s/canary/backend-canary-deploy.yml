@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: backend-canary
   namespace: skillify
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
+      track: canary
   template:
     metadata:
       labels:
         app: backend
+        track: canary
     spec:
       containers:
         - name: backend
@@ -19,20 +21,3 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
-          env:
-            - name: NODE_ENV
-              value: "production"
-            - name: MONGO_DB_URI
-              value: "mongodb://mongo:27017/skillify"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend
-  namespace: skillify
-spec:
-  selector:
-    app: backend
-  ports:
-    - port: 5000
-      targetPort: 5000

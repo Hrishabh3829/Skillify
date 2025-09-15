@@ -1,6 +1,20 @@
 pipeline {
   agent { label 'docker' }
 
+  options {
+    timestamps()
+    ansiColor('xterm')
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+  }
+
+  parameters {
+    choice(name: 'DEPLOY_STRATEGY', choices: ['rolling', 'canary', 'blue-green'], description: 'Kubernetes deploy strategy')
+    string(name: 'NAMESPACE', defaultValue: 'skillify', description: 'K8s namespace')
+    booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run unit tests')
+    booleanParam(name: 'PUSH_LATEST', defaultValue: true, description: 'Also push :latest tag')
+    string(name: 'BRANCH', defaultValue: 'main', description: 'Branch to build')
+  }
+
   environment {
     DOCKERHUB_CREDENTIALS = 'docker-hub-creds' // Jenkins credentials id
     KUBECONFIG_CREDENTIALS = 'kubeconfig'      // Jenkins file credential id for kubeconfig
@@ -10,7 +24,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        checkout scm
+        checkout([$class: 'GitSCM', branches: [[name: "*/${params.BRANCH}"]], userRemoteConfigs: scm.userRemoteConfigs])
         script {
           COMMIT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
         }
@@ -21,7 +35,7 @@ pipeline {
       parallel {
         stage('Frontend Build') {
           steps {
-            dir('services/frontend') {
+            dir('client') {
               sh 'npm ci'
               sh 'npm run build'
             }
@@ -30,11 +44,11 @@ pipeline {
         stage('Backend & Services Test') {
           steps {
             script {
-              def services = ['backend','auth-service','course-service','media-service']
-              services.each { svc ->
-                dir("services/${svc}") {
+              def backends = ['server']
+              backends.each { path ->
+                dir(path) {
                   sh 'npm ci'
-                  sh 'npm test || true'
+                  sh params.RUN_TESTS ? 'npm test || true' : 'echo "Skipping tests"'
                 }
               }
             }
@@ -46,11 +60,13 @@ pipeline {
     stage('Docker Build') {
       steps {
         script {
-          def services = ['frontend','backend','auth-service','course-service','media-service']
-          services.each { svc ->
-            dir("services/${svc}") {
-              sh "docker build -t ${DOCKER_USER}/${svc}:${COMMIT} ."
-            }
+          def images = [
+            [name: 'frontend', context: 'client', dockerfile: 'services/frontend/Dockerfile'],
+            [name: 'backend',  context: 'server', dockerfile: 'services/backend/Dockerfile']
+          ]
+          images.each { img ->
+            echo "Building ${img.name} from ${img.context} using ${img.dockerfile}"
+            sh "docker build -t ${DOCKER_USER}/${img.name}:${COMMIT} -f ${img.dockerfile} ${img.context}"
           }
         }
       }
@@ -61,11 +77,15 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER_SECRET', passwordVariable: 'DOCKER_PASS_SECRET')]) {
           sh 'echo $DOCKER_PASS_SECRET | docker login -u $DOCKER_USER_SECRET --password-stdin'
           script {
-            def services = ['frontend','backend','auth-service','course-service','media-service']
+            def services = ['frontend','backend']
             services.each { svc ->
-              sh "docker tag ${DOCKER_USER}/${svc}:${COMMIT} ${DOCKER_USER}/${svc}:latest"
+              if (params.PUSH_LATEST) {
+                sh "docker tag ${DOCKER_USER}/${svc}:${COMMIT} ${DOCKER_USER}/${svc}:latest"
+              }
               sh "docker push ${DOCKER_USER}/${svc}:${COMMIT}"
-              sh "docker push ${DOCKER_USER}/${svc}:latest"
+              if (params.PUSH_LATEST) {
+                sh "docker push ${DOCKER_USER}/${svc}:latest"
+              }
             }
           }
         }
@@ -80,12 +100,24 @@ pipeline {
             cp $KUBECONFIG_FILE $HOME/.kube/config
           '''
           script {
-            def services = ['backend','frontend','auth-service','course-service','media-service']
-            services.each { svc ->
-              sh "kubectl -n skillify set image deployment/${svc} ${svc}=nigachu42/${svc}:${COMMIT} --record || true"
+            def services = ['backend','frontend']
+            if (params.DEPLOY_STRATEGY == 'rolling') {
+              services.each { svc ->
+                sh "kubectl -n ${params.NAMESPACE} set image deployment/${svc} ${svc}=${DOCKER_USER}/${svc}:${COMMIT} --record || true"
+              }
+            } else if (params.DEPLOY_STRATEGY == 'canary') {
+              sh "bash services/ci/canary_rollout.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
+            } else if (params.DEPLOY_STRATEGY == 'blue-green') {
+              sh "bash services/ci/blue_green_deploy.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
             }
           }
         }
+      }
+    }
+
+    stage('Post-Deploy Health Check') {
+      steps {
+        sh 'bash services/ci/health_check.sh || true'
       }
     }
   }
@@ -96,6 +128,12 @@ pipeline {
     }
     failure {
       echo "FAILED: see logs"
+      script {
+        // Attempt automated rollback on failure for rolling/canary
+        if (params.DEPLOY_STRATEGY in ['rolling','canary']) {
+          sh 'bash services/ci/rollback.sh ${NAMESPACE} || true'
+        }
+      }
     }
   }
 }
