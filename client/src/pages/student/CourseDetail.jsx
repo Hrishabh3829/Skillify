@@ -16,6 +16,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import BackButton from "@/components/BackButton";
 // Using native <video> for robust Cloudinary playback
 
 const CourseDetail = () => {
@@ -62,6 +63,7 @@ const CourseDetail = () => {
       {/* Header Section */}
       <header className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
         <div className="max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-3">
+          <BackButton label="Back to courses" className="mb-2 w-max" />
           {isLoading ? (
             <>
               <Skeleton className="h-7 w-2/3 max-w-xl bg-white/20" />

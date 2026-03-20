@@ -6,6 +6,7 @@ import { useGetSearchCourseQuery } from "@/features/api/courseApi";
 import { Link, useSearchParams } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/BackButton";
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
@@ -29,6 +30,7 @@ const SearchPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 pt-2 md:pt-4">
+      <BackButton label="Back" className="mb-3" />
       <div className="my-4">
         <h1 className="font-bold text-xl md:text-2xl">result for "{query}"</h1>
         <p className="text-gray-700 dark:text-gray-300">

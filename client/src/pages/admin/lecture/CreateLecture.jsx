@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import Lecture from "./Lecture";
+import BackButton from "@/components/BackButton";
 
 const CreateLecture = () => {
   const [lectureTitle, setLectureTitle] = useState("");
@@ -52,6 +53,11 @@ const CreateLecture = () => {
     <div className="flex-1 mx-4 sm:mx-6 md:mx-10">
       {/* Page Header */}
       <div className="mb-4">
+        <BackButton
+          label="Back to course"
+          to={`/admin/course/${courseId}`}
+          className="mb-3"
+        />
         <h1 className="font-bold text-2xl text-gray-800 dark:text-white">
           Add a New Lecture
         </h1>
@@ -78,15 +84,7 @@ const CreateLecture = () => {
         </div>
 
         {/* Buttons */}
-  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/admin/course/${courseId}`)}
-            className="px-6"
-          >
-            Back to course
-          </Button>
-
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <Button
             variant="default"
             disabled={isLoading}

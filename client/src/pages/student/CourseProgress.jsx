@@ -14,6 +14,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import BackButton from "@/components/BackButton";
 
 const CourseProgress = () => {
   const params = useParams();
@@ -115,6 +116,7 @@ const CourseProgress = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 mt-4 md:mt-6">
+      <BackButton label="Back to course" className="mb-3 md:mb-4" />
       {isError ? (
         <div className="min-h-40 grid place-items-center text-center">
           <p className="text-sm text-red-600 dark:text-red-400">Failed to load course details.</p>

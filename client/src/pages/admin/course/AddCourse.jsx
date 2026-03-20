@@ -15,6 +15,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import BackButton from "@/components/BackButton";
 
 export const AddCourse = () => {
   const [courseTitle, setCourseTitle] = useState("");
@@ -84,10 +85,12 @@ export const AddCourse = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <Button variant="outline" onClick={() => navigate(`/admin/course`)}>
-            Back
-          </Button>
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+    <BackButton
+    label="Back to courses"
+    to="/admin/course"
+    className="mb-1 sm:mb-0"
+    />
           <Button
             variant="outline"
             disabled={isLoading}

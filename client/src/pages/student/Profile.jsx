@@ -20,6 +20,7 @@ import {
   useUpdateUserMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
+import BackButton from "@/components/BackButton";
 
 // Skeleton components
 const CourseSkeleton = () => <Skeleton className="h-40 w-full rounded-lg" />;
@@ -102,7 +103,8 @@ export const Profile = () => {
   const enrolledCourses = user?.enrolledCourses || [];
 
   return (
-  <div className="max-w-4xl mx-auto px-4 my-10">
+	<div className="max-w-4xl mx-auto px-4 my-10">
+	  <BackButton label="Back" className="mb-4" />
       <h1 className="font-bold text-2xl text-center md:text-left">PROFILE</h1>
 
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 my-5">
