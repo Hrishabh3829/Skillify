@@ -66,7 +66,7 @@ pipeline {
       steps {
         script {
           def images = [
-            [name: 'frontend', context: 'services/frontend', dockerfile: 'services/frontend/Dockerfile'],
+            [name: 'frontend', context: 'client', dockerfile: 'services/frontend/Dockerfile'],
             [name: 'backend',  context: 'server', dockerfile: 'services/backend/Dockerfile']
           ]
           images.each { img ->
