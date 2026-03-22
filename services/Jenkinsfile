@@ -36,7 +36,7 @@ pipeline {
         stage('Frontend Build') {
           steps {
             dir('client') {
-              sh 'npm ci'
+              bat 'npm ci'
               sh 'npm run build'
             }
           }
