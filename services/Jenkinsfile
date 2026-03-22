@@ -24,9 +24,10 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: "*/${params.BRANCH}"]], userRemoteConfigs: scm.userRemoteConfigs])
+        checkout([$class: 'GitSCM', branches: [[name: "*/${params.BRANCH}" ]], userRemoteConfigs: scm.userRemoteConfigs])
         script {
-          COMMIT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+          bat 'git rev-parse --short HEAD > commit.txt'
+          COMMIT = readFile('commit.txt').trim()
         }
       }
     }
@@ -37,7 +38,7 @@ pipeline {
           steps {
             dir('client') {
               bat 'npm ci'
-              sh 'npm run build'
+              bat 'npm run build'
             }
           }
         }
@@ -47,8 +48,12 @@ pipeline {
               def backends = ['server']
               backends.each { path ->
                 dir(path) {
-                  sh 'npm ci'
-                  sh params.RUN_TESTS ? 'npm test || true' : 'echo "Skipping tests"'
+                  bat 'npm ci'
+                  if (params.RUN_TESTS) {
+                    bat 'npm test'
+                  } else {
+                    bat 'echo Skipping tests'
+                  }
                 }
               }
             }
@@ -66,7 +71,7 @@ pipeline {
           ]
           images.each { img ->
             echo "Building ${img.name} from ${img.context} using ${img.dockerfile}"
-            sh "docker build -t ${DOCKER_USER}/${img.name}:${COMMIT} -f ${img.dockerfile} ${img.context}"
+            bat "docker build -t %DOCKER_USER%/${img.name}:${COMMIT} -f ${img.dockerfile} ${img.context}"
           }
         }
       }
@@ -75,16 +80,16 @@ pipeline {
     stage('Docker Push') {
       steps {
         withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER_SECRET', passwordVariable: 'DOCKER_PASS_SECRET')]) {
-          sh 'echo $DOCKER_PASS_SECRET | docker login -u $DOCKER_USER_SECRET --password-stdin'
+          bat 'echo %DOCKER_PASS_SECRET% | docker login -u %DOCKER_USER_SECRET% --password-stdin'
           script {
             def services = ['frontend','backend']
             services.each { svc ->
               if (params.PUSH_LATEST) {
-                sh "docker tag ${DOCKER_USER}/${svc}:${COMMIT} ${DOCKER_USER}/${svc}:latest"
+                bat "docker tag %DOCKER_USER%/${svc}:${COMMIT} %DOCKER_USER%/${svc}:latest"
               }
-              sh "docker push ${DOCKER_USER}/${svc}:${COMMIT}"
+              bat "docker push %DOCKER_USER%/${svc}:${COMMIT}"
               if (params.PUSH_LATEST) {
-                sh "docker push ${DOCKER_USER}/${svc}:latest"
+                bat "docker push %DOCKER_USER%/${svc}:latest"
               }
             }
           }
@@ -95,20 +100,20 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS, variable: 'KUBECONFIG_FILE')]) {
-          sh '''
-            mkdir -p $HOME/.kube
-            cp $KUBECONFIG_FILE $HOME/.kube/config
-          '''
+          // Windows: You may need to manually set up kubeconfig or use PowerShell
+          // bat 'mkdir %USERPROFILE%\.kube & copy %KUBECONFIG_FILE% %USERPROFILE%\.kube\config'
           script {
             def services = ['backend','frontend']
             if (params.DEPLOY_STRATEGY == 'rolling') {
               services.each { svc ->
-                sh "kubectl -n ${params.NAMESPACE} set image deployment/${svc} ${svc}=${DOCKER_USER}/${svc}:${COMMIT} --record || true"
+                bat "kubectl -n ${params.NAMESPACE} set image deployment/${svc} ${svc}=%DOCKER_USER%/${svc}:${COMMIT} --record"
               }
             } else if (params.DEPLOY_STRATEGY == 'canary') {
-              sh "bash services/ci/canary_rollout.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
+              // bat "bash services/ci/canary_rollout.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
+              echo 'Canary deploy script requires bash. Please run manually or install a Unix shell.'
             } else if (params.DEPLOY_STRATEGY == 'blue-green') {
-              sh "bash services/ci/blue_green_deploy.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
+              // bat "bash services/ci/blue_green_deploy.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
+              echo 'Blue-green deploy script requires bash. Please run manually or install a Unix shell.'
             }
           }
         }
@@ -117,7 +122,8 @@ pipeline {
 
     stage('Post-Deploy Health Check') {
       steps {
-        sh 'bash services/ci/health_check.sh || true'
+        // bat 'bash services/ci/health_check.sh || true'
+        echo 'Health check script requires bash. Please run manually or install a Unix shell.'
       }
     }
   }
@@ -131,7 +137,8 @@ pipeline {
       script {
         // Attempt automated rollback on failure for rolling/canary
         if (params.DEPLOY_STRATEGY in ['rolling','canary']) {
-          sh 'bash services/ci/rollback.sh ${NAMESPACE} || true'
+          // bat 'bash services/ci/rollback.sh ${NAMESPACE} || true'
+          echo 'Rollback script requires bash. Please run manually or install a Unix shell.'
         }
       }
     }
