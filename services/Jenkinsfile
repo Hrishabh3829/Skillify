@@ -17,7 +17,7 @@ pipeline {
 
   environment {
     DOCKERHUB_CREDENTIALS = 'docker-hub-token'
-    KUBECONFIG_CREDENTIALS = 'kubeconfig'      
+    KUBECONFIG_CREDENTIALS = 'kubeconfig'
     DOCKER_USER = 'nigachu42'
   }
 
@@ -79,8 +79,6 @@ pipeline {
 
     stage('Docker Push') {
       steps {
-        // Use a Secret text credential that stores only the Docker Hub access token.
-        // The Docker username comes from the DOCKER_USER environment variable.
         withCredentials([string(credentialsId: env.DOCKERHUB_CREDENTIALS, variable: 'DOCKER_PASS_SECRET')]) {
           bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS_SECRET%'
           script {
@@ -102,8 +100,6 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS, variable: 'KUBECONFIG_FILE')]) {
-          // Windows: You may need to manually set up kubeconfig or use PowerShell
-          // bat 'mkdir %USERPROFILE%\.kube & copy %KUBECONFIG_FILE% %USERPROFILE%\.kube\config'
           script {
             def services = ['backend','frontend']
             if (params.DEPLOY_STRATEGY == 'rolling') {
@@ -111,10 +107,8 @@ pipeline {
                 bat "kubectl -n ${params.NAMESPACE} set image deployment/${svc} ${svc}=%DOCKER_USER%/${svc}:${COMMIT} --record"
               }
             } else if (params.DEPLOY_STRATEGY == 'canary') {
-              // bat "bash services/ci/canary_rollout.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
               echo 'Canary deploy script requires bash. Please run manually or install a Unix shell.'
             } else if (params.DEPLOY_STRATEGY == 'blue-green') {
-              // bat "bash services/ci/blue_green_deploy.sh ${params.NAMESPACE} ${COMMIT} ${DOCKER_USER}"
               echo 'Blue-green deploy script requires bash. Please run manually or install a Unix shell.'
             }
           }
@@ -124,7 +118,6 @@ pipeline {
 
     stage('Post-Deploy Health Check') {
       steps {
-        // bat 'bash services/ci/health_check.sh || true'
         echo 'Health check script requires bash. Please run manually or install a Unix shell.'
       }
     }
@@ -137,9 +130,7 @@ pipeline {
     failure {
       echo "FAILED: see logs"
       script {
-        // Attempt automated rollback on failure for rolling/canary
         if (params.DEPLOY_STRATEGY in ['rolling','canary']) {
-          // bat 'bash services/ci/rollback.sh ${NAMESPACE} || true'
           echo 'Rollback script requires bash. Please run manually or install a Unix shell.'
         }
       }
