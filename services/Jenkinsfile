@@ -82,7 +82,7 @@ pipeline {
         // Use a Secret text credential that stores only the Docker Hub access token.
         // The Docker username comes from the DOCKER_USER environment variable.
         withCredentials([string(credentialsId: env.DOCKERHUB_CREDENTIALS, variable: 'DOCKER_PASS_SECRET')]) {
-          bat 'echo %DOCKER_PASS_SECRET% | docker login -u %DOCKER_USER% --password-stdin'
+          bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS_SECRET%'
           script {
             def services = ['frontend','backend']
             services.each { svc ->
