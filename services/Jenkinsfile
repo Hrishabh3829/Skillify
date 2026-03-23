@@ -16,8 +16,8 @@ pipeline {
   }
 
   environment {
-    DOCKERHUB_CREDENTIALS = 'docker-hub-creds' // Jenkins credentials id
-    KUBECONFIG_CREDENTIALS = 'kubeconfig'      // Jenkins file credential id for kubeconfig
+    DOCKERHUB_CREDENTIALS = 'docker-hub-token'
+    KUBECONFIG_CREDENTIALS = 'kubeconfig'      
     DOCKER_USER = 'nigachu42'
   }
 
@@ -79,8 +79,10 @@ pipeline {
 
     stage('Docker Push') {
       steps {
-        withCredentials([usernamePassword(credentialsId: env.DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER_SECRET', passwordVariable: 'DOCKER_PASS_SECRET')]) {
-          bat 'echo %DOCKER_PASS_SECRET% | docker login -u %DOCKER_USER_SECRET% --password-stdin'
+        // Use a Secret text credential that stores only the Docker Hub access token.
+        // The Docker username comes from the DOCKER_USER environment variable.
+        withCredentials([string(credentialsId: env.DOCKERHUB_CREDENTIALS, variable: 'DOCKER_PASS_SECRET')]) {
+          bat 'echo %DOCKER_PASS_SECRET% | docker login -u %DOCKER_USER% --password-stdin'
           script {
             def services = ['frontend','backend']
             services.each { svc ->
