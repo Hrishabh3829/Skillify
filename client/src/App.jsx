@@ -25,6 +25,9 @@ import {
 import PurchaseCourseProtectedRoute from "./pages/PurchaseCourseProtectedRoute";
 import OAuthSuccess from "./pages/OAuthSuccess";
 
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+
 const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -45,6 +48,14 @@ const appRouter = createBrowserRouter([
             <Courses />
           </>
         ),
+      },
+      {
+        path: "privacy-policy",
+        element: <PrivacyPolicy />
+      },
+      {
+        path: "terms-of-service",
+        element: <TermsOfService />
       },
       {
         path: "oauth-success",
