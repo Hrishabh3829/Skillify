@@ -99,18 +99,12 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        withCredentials([file(credentialsId: env.KUBECONFIG_CREDENTIALS, variable: 'KUBECONFIG_FILE')]) {
-          script {
-            def services = ['backend','frontend']
-            if (params.DEPLOY_STRATEGY == 'rolling') {
-              services.each { svc ->
-                bat "set KUBECONFIG=%KUBECONFIG_FILE% && kubectl -n ${params.NAMESPACE} set image deployment/${svc} ${svc}=%DOCKER_USER%/${svc}:${COMMIT} --record"
-              }
-            } else if (params.DEPLOY_STRATEGY == 'canary') {
-              echo 'Canary deploy script requires bash. Please run manually or install a Unix shell.'
-            } else if (params.DEPLOY_STRATEGY == 'blue-green') {
-              echo 'Blue-green deploy script requires bash. Please run manually or install a Unix shell.'
-            }
+        script {
+          def services = ['backend','frontend']
+          echo "Simulating deploy to Kubernetes (no real kubectl commands)."
+          echo "Namespace: ${params.NAMESPACE}, Strategy: ${params.DEPLOY_STRATEGY}"
+          services.each { svc ->
+            echo "Would deploy %DOCKER_USER%/${svc}:${COMMIT} to deployment/${svc} in Kubernetes."
           }
         }
       }
