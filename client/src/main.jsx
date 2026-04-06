@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
 import { useLoadUserQuery } from "./features/api/authApi";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Analytics } from "@vercel/analytics/react";
 
 const Custom = ({ children }) => {
   const { isLoading } = useLoadUserQuery();
@@ -35,6 +36,7 @@ createRoot(document.getElementById("root")).render(
         <Custom>
           <App />
           <Toaster position="top-right" duration={2200} closeButton={false} />
+          <Analytics />
         </Custom>
       </ThemeProvider>
     </Provider>
